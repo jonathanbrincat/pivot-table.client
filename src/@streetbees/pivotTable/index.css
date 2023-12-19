@@ -1,0 +1,173 @@
+/*
+* CSS Variables - Default Colour Palette
+* These are the actual colours or their nouns.
+*/
+:root {
+  --palette-yellow: #fded12;
+  --palette-amber: #fdc612;
+  --palette-orange: #ffb50d;
+
+  --palette-denim: #526d82;
+  --palette-blue: #9db2bf;
+  --palette-mist: #dde6ed;
+}
+
+/*
+* CSS Variables - Theme Swatch
+* These are how the colours are used, or their roles or verbs.
+*/
+:root {
+  --swatch-primary: var(--palette-amber);
+  --swatch-primary-lighten: var(--palette-yellow);
+  --swatch-primary-darken: var(--palette-orange);
+
+  --swatch-dark: var(--palette-denim);
+  --swatch-neutral: var(--palette-blue);
+  --swatch-bg-light: var(--palette-mist);
+}
+
+/*
+* Pivot Table UI
+*/
+.pivot__ui {
+  display: grid;
+  grid-template-areas:
+    'renderer criterion'
+    'aggregator axisX'
+    'axisY sortBy'
+    'axisY output';
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 1rem 0;
+}
+  .pivot__renderer {
+    grid-area: renderer;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  .pivot__aggregator {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    grid-area: aggregator;
+  }
+    .pivot__aggregator .ui__select:not(:first-of-type) {
+      margin-left: 18px;
+    }
+
+  .pivot__criterion {
+    background-color: var(--swatch-neutral);
+    grid-area: criterion;
+    padding: 8px;
+  }
+
+  .pivot__axis {
+    background: var(--swatch-dark);
+    padding: 8px;
+  }
+
+  .pivot__axis-x {
+    grid-area: axisX;
+  }
+
+  .pivot__axis-y {
+    grid-area: axisY;
+    min-width: 100px;
+  }
+
+  .pivot__output {
+    grid-area: output;
+    overflow-x: auto;
+  }
+
+/*
+* Pivot Table UI / SortBy
+*/
+.pivot__sortBy {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+  grid-area: sortBy;
+}
+  .sortBy__container {
+    border-radius: var(--border-radius);
+    background-color: var(--swatch-bg-light);
+    display: flex;
+    flex-wrap: wrap;
+    padding: 3px 8px;
+  }
+
+  .pivot__sortBy hr {
+    border-width: 0 thin 0 0;
+    border-style: solid;
+    border-color: var(--swatch-dark);
+    height: auto;
+    align-self: stretch;
+    flex-shrink: 0;
+    margin: 4px 6px;
+  }
+
+  .sortBy__x,
+  .sortBy__y {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .sortBy__control-group {
+    display: inline-flex;
+    gap: 2px;
+  }
+
+  .sortBy__toggle {
+    cursor: pointer;
+  }
+
+  .pivot__sortBy h4 {
+    font-size: 0.75em;
+    font-weight: 400;
+    margin: 0;
+  }
+
+  .pivot__sortBy label {
+    line-height: 1;
+  }
+
+  .pivot__sortBy label:hover input[type="radio"]:not(:checked) + span {
+    background-color: var(--swatch-primary-darken);
+    color: inherit;
+  }
+
+  .pivot__sortBy label input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  .pivot__sortBy label input[type="radio"] + span {
+    border-radius: var(--border-radius);
+    border-right-width: 0;
+    color: rgba(0,0,0, 0.5);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+  }
+
+  .pivot__sortBy label input[type="radio"]:checked + span {
+    background-color: var(--swatch-primary);
+    color: rgba(0, 0, 0, 1);
+  }

@@ -1,0 +1,82 @@
+[data-app="DataExplorer"]label,
+.ui__checkbox,
+.ui__radio {
+  cursor: pointer;
+}
+
+[data-app="DataExplorer"] .btn.btn-primary {
+  --bs-btn-color: var(--bs-body-color);
+  --bs-btn-bg: var(--swatch-primary);
+  --bs-btn-border-color: var(--swatch-primary);
+  --bs-btn-hover-color: var(--bs-body-color);
+  --bs-btn-hover-bg: var(--swatch-primary-darken);
+  --bs-btn-hover-border-color: var(--swatch-primary-darken);
+  --bs-btn-disabled-color: rgba(16, 16, 16, 0.3);
+  --bs-btn-disabled-bg: #e4e4e4;
+  --bs-btn-disabled-border-color: #e4e4e4;
+}
+
+.ui__toggle {
+  display: inline-flex;
+}
+
+.ui__toggle label:hover input[type="radio"]:not(:checked) + span {
+  background-color: var(--swatch-primary-darken);
+  border-color: var(--swatch-primary-darken);
+  box-shadow: none;
+  color: inherit;
+}
+
+.ui__toggle input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.ui__toggle input[type="radio"]+span {
+  background-color: #e4e4e4;
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  line-height: 1;
+  text-align: center;
+  padding: 8px 16px;
+  margin-right: -1px;
+  border: 1px solid var(--swatch-primary);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px rgba(255, 255, 255, 0.1);
+  transition:
+    background-color .15s,
+    background-image .15s,
+    color 0.15s,
+    border-color 0.15s,
+    box-shadow .15s;
+}
+
+.ui__toggle input[type="radio"]:checked+span {
+  background-color: var(--swatch-primary);
+  color: rgba(0, 0, 0);
+  box-shadow: none;
+}
+
+.ui__toggle>label:first-of-type>span {
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.ui__toggle>label:last-of-type>span {
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+/*  */
+.ui__vertical-rule {
+  border-width: 0 1px 0 0;
+  border-style: solid;
+  border-color: var(--border-color-body);
+  height: auto;
+  align-self: stretch;
+  margin: 6px;
+}

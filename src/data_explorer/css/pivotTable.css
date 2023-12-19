@@ -1,0 +1,117 @@
+/*
+* CSS Variables overrides
+**/
+[data-app="DataExplorer"] {
+  --swatch-primary: var(--amber);
+  --swatch-primary-lighten: var(--yellow);
+  --swatch-primary-darken: var(--orange);
+
+  --swatch-bg-light: var(--palette-mist);
+
+  --border-radius: var(--bs-border-radius);
+}
+
+/*
+* Overrides
+**/
+.pivot__renderer,
+.pivot__aggregator,
+.pivot__criterion,
+.pivot__axis {
+  display: none !important;
+}
+
+/*
+* THEMED Pivot Table UI
+**/
+.pivot__ui {
+  grid-template-areas:
+    'renderer sortBy'
+    'output output';
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 24px;
+  padding: 24px;
+  margin: 0;
+}
+
+.pivot__dimension,
+.pivot__ui .ui__button {
+  max-width: 200px;
+}
+
+/*
+* THEMED Pivot Table UI / Renderer(Table)
+**/
+.pvtAxisLabel {
+  max-width: 240px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 
+* Data Explorer
+**/
+.pvtTable {
+}
+
+.pvtTable thead tr:first-child th:first-child {
+  background-color: transparent;
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+
+.pvtTable thead th {
+  background-color: var(--swatch-bg-light);
+  vertical-align: bottom;
+}
+
+.pvtTable th {
+  font-weight: 300;
+}
+
+.pvtTable thead tr th {
+  padding: 12px;
+}
+
+.pvtTable tbody tr th,
+.pvtTable tbody tr td {
+  padding: 8px 12px;
+}
+
+.pvtTable thead .pvtTotalLabel,
+.pvtTable thead .pvtAxisLabel {
+  font-weight: 700;
+}
+
+.pivot__sortBy {
+  background-color: transparent;
+}
+
+.pvtTable tbody tr:last-child .pvtTotalLabel {
+  background-color: transparent;
+  border-color: transparent;
+  color: inherit;
+  font-weight: 700;
+}
+
+.pvtTable tbody tr:last-child .pvtTotal,
+.pvtTable tbody tr:last-child .pvtGrandTotal {
+  background-color: transparent;
+  border-color: transparent;
+  border-top: 2px solid #000;
+  color: inherit;
+  font-weight: 700;
+}
+
+.pvtTable thead tr:first-child th:last-child {
+  border-top-right-radius: var(--border-radius);
+}
+
+.pvtTable thead tr:first-child .pvtAxisLabel,
+.pvtTable thead tr:last-child th:first-child {
+  border-top-left-radius: var(--border-radius);
+}
+
+.pvtTable tbody tr:nth-last-of-type(2) th {
+  border-bottom-left-radius: var(--border-radius);
+}
