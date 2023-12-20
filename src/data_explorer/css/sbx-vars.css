@@ -1,0 +1,37 @@
+/* => app/assets/stylessheets/application.styles.scss */
+:root {
+  --bs-font-sans-serif: 'Lato', sans-serif;
+}
+
+/* => app/assets/stylessheets/colors.styles.scss */
+:root {
+  --green-100: #d1e7db;
+  --green-200: #9ed4b6;
+
+  --pink-100: #f7d6e3;
+  --pink-500: #e7005e;
+  --blue-100: #f0efff;
+
+  --blue-200: #bcc2ff;
+
+  --gray-100: #d6d4d1;
+  --gray-400: #d6d5d1;
+  --whitesmoke: #f6f4f1;
+  --silver: #ddd;
+  --mist: #dde6ed;
+
+  --yellow: #fded12;
+  --amber: #fdc612;
+  --orange: #ffb50D;
+
+  --swatch-primary: var(--amber);
+
+  --components-alert-primary-text: #084298;
+  --theme-warning: var(--swatch-primary);
+  --components-alert-warning-background: #fff3cd;
+
+  --bg-header: var(--whitesmoke);
+
+  --border-color-body: var(--grey-10);
+  --border-color-container: var(--silver);
+}

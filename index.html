@@ -6,11 +6,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <title>SBX | Data Explorer</title>
+
+    <style>
+      :root {
+        background-color: var(--bs-body-bg);
+        font-family: var(--bs-body-font-family);
+        font-size: var(--bs-body-font-size);
+        font-weight: var(--bs-body-font-weight);
+        line-height: var(--bs-body-line-height);
+        color: var(--bs-body-color);
+        text-align: var(--bs-body-text-align);
+        font-synthesis: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      html, body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        display: flex;
+        min-width: 320px;
+        min-height: 100vh;
+      }
+
+      main {
+        padding: 2rem;
+      }
+    </style>
   </head>
 
   <body>
-    <div id="app" />
-    
-    <script type="module" src="/src/index.jsx"></script>
+    <main>
+      <section class="container">
+        <h1 style="font-size: 4rem; font-weight: 300; margin-bottom: 3rem;">Explore the Data</h1>
+        
+        <div id="app" data-app="DataExplorer" />
+      </section>
+      
+      <script type="module" src="/src/index.jsx"></script>
+    </main>
   </body>
 </html>

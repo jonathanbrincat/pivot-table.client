@@ -1,16 +1,25 @@
 # SBX Data Explorer
 
-Built upon the React + Vite boilerplate
+Built upon the React + Vite boilerplate. Dec. 2023.
 
-This is a proof of concept/prototype piece for the Streetbees Copilot Dashboard proofing exploring approaches to produce tooling to grep the surveyed data for relay and presentation to the user and assist with the discover of insights.
+This is a prototype piece for the Streetbees Copilot Dashboard exploring and proofing an approach to produce tooling to probe and relay the surveyed data to the user for deeper examination and assist with the discovery of insights.
 
-It has been built in React to facilitate rapid conversion of ideas and avenues into working concepts that can be probed and expanded into a refined product.
+It has been built in React to facilitate fluid conversion of ideas into working concepts that can be reviewed and evolved into a refined product and to leverage the rich JavaScript ecosystem.
 
-To run the application
+Setup
 ```
 yarn install --immutable --immutable-cache
+# installation with matched dependencies
+```
 
+To run the application for development
+```
 yarn start
 ```
 
-It will exist on `http://localhost:5173`.
+To run build for production
+```
+yarn run build
+```
+
+The build will be available on `http://localhost:5173`.
