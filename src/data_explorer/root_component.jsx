@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react'
 import PivotTableUI from '../@streetbees/pivotTable'
 import TableRenderers from '../@streetbees/pivotTable/components/renderers/TableRenderers'
 import createChartjsRenderers from '../@streetbees/pivotTable/components/renderers/ChartjsRenderers'
+// import useData from './hooks/useData.orig'
 import useData from './hooks/useData'
+// import useTaxonomy from './hooks/useTaxonomy.orig'
 import useTaxonomy from './hooks/useTaxonomy'
 import useTreeNodes from './hooks/useTreeNodes'
 import { aggregators, aggregatorTemplates } from '../@streetbees/pivotTable/js/Utilities'
 import { streetbeesAggregator, usFmtInt } from './js/streetbeesAggregator'
+import { isEmptyObject } from './js/utility'
 import STATIC, { colors as palette  } from './js/constants'
 
 import { Dialog as PrimeDialog } from 'primereact/dialog'
@@ -23,9 +26,12 @@ const options = {
 	unusedOrientationCutoff: Infinity,
 }
 
+const uid = '34725_34727_colgate_oralcare_2'
+
 export default function DataExplorer({...props}) {
-	const [data] = useData([])
-	const [taxonomy, setTaxonomy] = useTaxonomy(data)
+	const [data] = useData([]) // useDataService(uid)
+	// const [taxonomy, setTaxonomy] = useTaxonomy(data)
+	const [taxonomy] = useTaxonomy({}) // usePreflight(uid)
 	const [dimensionCollection, setDimensionCollection] = useState({})
 	const [dataset, setDataset] = useState([])
 
@@ -52,15 +58,15 @@ export default function DataExplorer({...props}) {
 	/**
 	 * Extrapolate the taxonomy from the data schema to facilitate mechanism of data consumption
 	 */
-	useEffect(() => {
-		setTaxonomy(data)
-	}, [data])
+	// useEffect(() => {
+	// 	setTaxonomy(data)
+	// }, [data])
 
 	/**
 	 * Calibrated schema for composition and hydration purposes over specific applications; create the node tree structure compatible with rendering treeview(PrimeReact) UI
 	 */
 	useEffect(() => {
-		if (taxonomy?.length) return
+		if (isEmptyObject(taxonomy)) return
 
 		setDimensionCollection(
 			Object.fromEntries(taxonomy?.['dimensions'])

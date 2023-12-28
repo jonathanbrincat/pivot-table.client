@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getData } from '../js/services/dataService'
+import { getAllData } from '../js/services/dataService.orig'
 
 export default function useData(initialValue) {
   const [data, setData] = useState(() => {
@@ -9,7 +9,7 @@ export default function useData(initialValue) {
   useEffect(() => {
     async function init() {
       try {
-        setData(await getData('34725_34727_colgate_oralcare_2'))
+        setData(await getAllData())
       } catch (error) {
         console.log('Something went wrong retrieving the data from the endpoint :: ', error)
       }
