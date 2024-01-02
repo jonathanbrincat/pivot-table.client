@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PivotTableUI from '../@streetbees/pivotTable'
 import TableRenderers from '../@streetbees/pivotTable/components/renderers/TableRenderers'
 import createChartjsRenderers from '../@streetbees/pivotTable/components/renderers/ChartjsRenderers'
-// import useData from './hooks/useData.orig'
 import useData from './hooks/useData'
-// import useTaxonomy from './hooks/useTaxonomy.orig'
 import useTaxonomy from './hooks/useTaxonomy'
 import useTreeNodes from './hooks/useTreeNodes'
 import { aggregators, aggregatorTemplates } from '../@streetbees/pivotTable/js/Utilities'
@@ -26,12 +24,13 @@ const options = {
 	unusedOrientationCutoff: Infinity,
 }
 
-const uid = '34725_34727_colgate_oralcare_2'
+const PROJECT = '34725_34727_colgate_oralcare_2'
 
 export default function DataExplorer({...props}) {
-	const [data] = useData([]) // useDataService(uid)
-	// const [taxonomy, setTaxonomy] = useTaxonomy(data)
-	const [taxonomy] = useTaxonomy({}) // usePreflight(uid)
+	const [uid, setUid] = useState(PROJECT)
+
+	const [data] = useData(uid)
+	const [taxonomy] = useTaxonomy(uid) // preflight request to calibrate the consumption of the data and the construction of a UI around it
 	const [dimensionCollection, setDimensionCollection] = useState({})
 	const [dataset, setDataset] = useState([])
 
@@ -56,11 +55,11 @@ export default function DataExplorer({...props}) {
 	const [activeRenderer, setActiveRenderer] = useState(STATIC.RENDERER.table)
 
 	/**
-	 * Extrapolate the taxonomy from the data schema to facilitate mechanism of data consumption
+	 * When a data source loads assign it as the working dataset by default behaviour
 	 */
-	// useEffect(() => {
-	// 	setTaxonomy(data)
-	// }, [data])
+	useEffect(() => {
+		setDataset(data)
+	}, [data])
 
 	/**
 	 * Calibrated schema for composition and hydration purposes over specific applications; create the node tree structure compatible with rendering treeview(PrimeReact) UI
@@ -219,6 +218,12 @@ export default function DataExplorer({...props}) {
 
 	return (
 		<>
+			{/* Dev only */}
+			<label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+				<span>UID</span>
+				<input type="text" value={uid} onChange={(event) => setUid(event.target.value)} style={{ width: '100%' }} />
+			</label>
+
 			{/* Dialogs & sidebars */}
 			<div>
 				<PrimeDialog header="Apply data restrictions" visible={isDatasetFilters} style={{ width: '75vw' }} onHide={() => setIsDatasetFilters(false)}>

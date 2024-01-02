@@ -44,6 +44,7 @@ export default function useTaxonomy(initialValue) {
   })
 
   const setTaxonomyProxy = (data) => {
+    console.log(parser(data))
     setTaxonomy(parser(data))
   }
 
