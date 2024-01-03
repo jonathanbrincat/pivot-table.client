@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import PivotTableUI from '../@streetbees/pivotTable'
 import TableRenderers from '../@streetbees/pivotTable/components/renderers/TableRenderers'
 import createChartjsRenderers from '../@streetbees/pivotTable/components/renderers/ChartjsRenderers'
 import useData from './hooks/useData'
-import useTaxonomy from './hooks/useTaxonomy'
+// import useTaxonomy from './hooks/useTaxonomy'
 import useTreeNodes from './hooks/useTreeNodes'
 import { aggregators, aggregatorTemplates } from '../@streetbees/pivotTable/js/Utilities'
 import { streetbeesAggregator, usFmtInt } from './js/streetbeesAggregator'
@@ -24,13 +25,14 @@ const options = {
 	unusedOrientationCutoff: Infinity,
 }
 
-const PROJECT = '34725_34727_colgate_oralcare_2'
+// const PROJECT = '34725_34727_colgate_oralcare_2'
 
 export default function DataExplorer({...props}) {
-	const [uid, setUid] = useState(PROJECT)
+	const { uid, taxonomy } = props
+	console.log('taxonomy >> ', taxonomy)
 
 	const [data] = useData(uid)
-	const [taxonomy] = useTaxonomy(uid) // preflight request to calibrate the consumption of the data and the construction of a UI around it
+	// const [taxonomy] = useTaxonomy(PROJECT) // preflight request to calibrate the consumption of the data and the construction of a UI around it
 	const [dimensionCollection, setDimensionCollection] = useState({})
 	const [dataset, setDataset] = useState([])
 
@@ -218,12 +220,6 @@ export default function DataExplorer({...props}) {
 
 	return (
 		<>
-			{/* Dev only */}
-			<label style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-				<span>UID</span>
-				<input type="text" value={uid} onChange={(event) => setUid(event.target.value)} style={{ width: '100%' }} />
-			</label>
-
 			{/* Dialogs & sidebars */}
 			<div>
 				<PrimeDialog header="Apply data restrictions" visible={isDatasetFilters} style={{ width: '75vw' }} onHide={() => setIsDatasetFilters(false)}>
@@ -507,4 +503,14 @@ export default function DataExplorer({...props}) {
 			}
 		</>
 	)
+}
+
+DataExplorer.defaultProps = {
+	uid: '',
+	taxonomy: {},
+}
+
+DataExplorer.propTypes = {
+	uid: PropTypes.string.isRequired,
+	taxonomy: PropTypes.objectOf(PropTypes.array),
 }
