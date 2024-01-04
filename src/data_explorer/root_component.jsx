@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+// import { Form } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import PivotTableUI from '../@streetbees/pivotTable'
 import TableRenderers from '../@streetbees/pivotTable/components/renderers/TableRenderers'
@@ -25,11 +26,15 @@ const options = {
 	unusedOrientationCutoff: Infinity,
 }
 
+// export async function action({ request, params }) {
+// 	let formData = await request.formData()
+// 	return updateContact(params.contactId)
+// }
+
 // const PROJECT = '34725_34727_colgate_oralcare_2'
 
 export default function DataExplorer({...props}) {
 	const { uid, taxonomy } = props
-	console.log('taxonomy >> ', taxonomy)
 
 	const [data] = useData(uid)
 	// const [taxonomy] = useTaxonomy(PROJECT) // preflight request to calibrate the consumption of the data and the construction of a UI around it
@@ -69,17 +74,40 @@ export default function DataExplorer({...props}) {
 	useEffect(() => {
 		if (isEmptyObject(taxonomy)) return
 
+		// JB: going to be broken
+		// => needs to be this shape {"dimension-1": ["attribute-1-1", "attribute-1-2"], "dimension-2": ["attribute-2-1", "attribute-2-2"]}
+		// setDimensionCollection(
+		// 	Object.fromEntries(taxonomy?.['dimensions'])
+		// )
 		setDimensionCollection(
-			Object.fromEntries(taxonomy?.['dimensions'])
-		)
-
-		setDatasetFilters(
-			taxonomy?.['dimensions']?.map(
-				([dimension]) => [dimension, []]
+			Object.fromEntries(
+				taxonomy?.['dimensions'].map(({ label, attributes }) => [
+					label,
+					attributes.map((attribute) => attribute.label),
+				])
 			)
 		)
 
-		setTreeNodes(taxonomy?.['key_variables'])
+		// JB: going to be broken
+		// => needs to be this shape [["dimension-1", []], ["dimension-2", []]]
+		// setDatasetFilters(
+		// 	taxonomy?.['dimensions']?.map(
+		// 		([dimension]) => [dimension, []]
+		// 	)
+		// )
+		setDatasetFilters(
+			taxonomy?.['dimensions']?.map(({ label }) => [label, []])
+		)
+
+		// JB: going to be broken
+		// => needs to be this shape [["key_variable-1", ["attribute-1-1", "attribute-1-2"]], ["key_variable-2", ["attribute-2-1", "attribute-2-2"]]]
+		// setTreeNodes(taxonomy?.['key_variables'])
+		setTreeNodes(
+			taxonomy?.['key_variables'].map(({ label, attributes }) => [
+				label,
+				attributes.map((attribute) => attribute.label),
+			])
+		)
 	}, [taxonomy])
 
 	/**
@@ -225,24 +253,24 @@ export default function DataExplorer({...props}) {
 				<PrimeDialog header="Apply data restrictions" visible={isDatasetFilters} style={{ width: '75vw' }} onHide={() => setIsDatasetFilters(false)}>
 					<div className="field__global-filters">
 						{
-							taxonomy?.['dimensions']?.map(([dimension, collection], i) => {
+							taxonomy?.['dimensions']?.map((dimension, i) => {
 								const $nodes = [
-									<dt className="global-filters__list-item-header" key={dimension}>
+									<dt className="global-filters__list-item-header" key={`header-${dimension.id}`}>
 										<label className="ui__checkbox">
-											<span>{dimension}</span>
+											<span>{dimension.label}</span>
 										</label>
 									</dt>
 								]
 
-								collection.map((item) => (
+								dimension.attributes.map((item) => (
 									$nodes.push(
-										<dd className="global-filters__list-item" key={[dimension, item]}>
+										<dd className="global-filters__list-item" key={[dimension.id, item.id]}>
 											<label className="ui__checkbox">
 												<input
 													type="checkbox"
 													className="ui__control ui__control--checkbox"
-													value={item}
-													checked={datasetFilters[i]?.[1]?.includes(item) || false}
+													value={item.label}
+													checked={datasetFilters[i]?.[1]?.includes(item.label) || false}
 													onChange={(event) => {
 														setDatasetFilters((previous) => {
 															const updated = [...previous]
@@ -251,14 +279,14 @@ export default function DataExplorer({...props}) {
 																// Add item to the corresponding nested array
 																updated[i] = [
 																	dimension,
-																	[...(updated[i]?.[1] || []), item],
+																	[...(updated[i]?.[1] || []), item.label],
 																]
 															} else {
 																// Remove item from the corresponding nested array
 																updated[i] = [
 																	dimension,
 																	updated[i]?.[1]?.filter(
-																		(remove) => remove !== item
+																		(remove) => remove !== item.label
 																	),
 																]
 															}
@@ -267,14 +295,14 @@ export default function DataExplorer({...props}) {
 														})
 													}}
 												/>
-												<span>{item}</span>
+												<span>{item.label}</span>
 											</label>
 										</dd>
 									)
 								))
 
 								return (
-									<dl className={['global-filters__list', `global-filters__list--${dimension.toLowerCase()}`].join(' ')} key={dimension}>
+									<dl className={['global-filters__list', `global-filters__list--${dimension.label.toLowerCase()}`].join(' ')} key={dimension.id}>
 										{$nodes}
 									</dl>
 								)
@@ -406,8 +434,8 @@ export default function DataExplorer({...props}) {
 								>
 									<option value="">Make your selection&hellip;</option>
 									{
-										taxonomy['questions'].map(([dimension]) => (
-											<option value={dimension} key={dimension}>{dimension}</option>
+										taxonomy['questions'].map((dimension) => (
+											<option value={dimension.label} key={dimension.id}>{dimension.label}</option>
 										))
 									}
 								</select>
@@ -430,6 +458,21 @@ export default function DataExplorer({...props}) {
 					</div>
 				}
 			</div>
+
+			{/* <Form
+				action="update"
+				onSubmit={(event) => {
+					if (
+						!confirm(
+							"Update the data"
+						)
+					) {
+						event.preventDefault()
+					}
+				}}
+			>
+				<button type="submit">Update</button>
+			</Form> */}
 
 			{
 				(question && !!keyVariableCollection?.length) &&

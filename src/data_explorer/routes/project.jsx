@@ -21,7 +21,6 @@ export default function Project() {
 
 	return (
 		<div id="project">
-			<h2>{ uid }</h2>
 			{/* <code>{ JSON.stringify(preflight) }</code> */}
 
 			<DataExplorer uid={uid} taxonomy={preflight} />

@@ -1,4 +1,4 @@
-import { Form, useLoaderData/* , useFetcher */ } from 'react-router-dom'
+import { Form, useLoaderData } from 'react-router-dom'
 import { getContact, updateContact } from '../js/services/contacts'
 
 export async function loader({ params }) {
@@ -43,10 +43,7 @@ export default function Contact() {
 					) : (
 						<i>No Name</i>
 					)}{" "}
-					{/* <Favorite contact={contact} /> */}
 				</h1>
-
-				{contact.notes && <p>{contact.notes}</p>}
 
 				<div>
 					<Form action="edit">
@@ -54,43 +51,22 @@ export default function Contact() {
 					</Form>
 
 					{/* <Form
-				method="post"
-				action="destroy"
-				onSubmit={(event) => {
-					if (
-						!confirm(
-							"Please confirm you want to delete this record."
-						)
-					) {
-						event.preventDefault();
-					}
-				}}
-			>
-				<button type="submit">Delete</button>
-			</Form> */}
+						method="post"
+						action="destroy"
+						onSubmit={(event) => {
+							if (
+								!confirm(
+									"Please confirm you want to delete this record."
+								)
+							) {
+								event.preventDefault();
+							}
+						}}
+					>
+						<button type="submit">Delete</button>
+					</Form> */}
 				</div>
 			</div>
 		</div>
 	)
 }
-
-// function Favorite({ contact }) {
-// 	const fetcher = useFetcher()
-// 	let favorite = contact.favorite
-// 	return (
-// 		// <Form method="post">
-// 		<fetcher.Form method="post">
-// 			<button
-// 				name="favorite"
-// 				value={favorite ? "false" : "true"}
-// 				aria-label={
-// 					favorite
-// 						? "Remove from favorites"
-// 						: "Add to favorites"
-// 				}
-// 			>
-// 				{favorite ? "★" : "☆"}
-// 			</button>
-// 		</fetcher.Form>
-// 	);
-// }

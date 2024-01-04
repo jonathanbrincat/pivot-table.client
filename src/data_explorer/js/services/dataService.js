@@ -6,6 +6,7 @@ export const API = `${PROTOCOL}${DOMAIN}/${SERVICE}`
 
 export async function getTaxonomy(uid) {
   const response = await fetch(`${API}/questions/${uid}`)
+  // const response = await fetch(`${API}/question_ids/${uid}`)
   if (response.ok) return response.json()
 
   throw response

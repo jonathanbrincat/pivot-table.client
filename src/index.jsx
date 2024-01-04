@@ -2,12 +2,12 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import App from './data_explorer/root_component.jsx'
-import Root, { loader as rootLoader, action as rootAction, } from './data_explorer/routes/root.jsx'
+import Root, { loader as rootLoader/* , action as rootAction, */ } from './data_explorer/routes/root.jsx'
 import Index from './data_explorer/routes/index'
 import Contact, { loader as contactLoader, action as contactAction, } from './data_explorer/routes/contact.jsx'
 import Project, { loader as projectLoader } from './data_explorer/routes/project.jsx'
 import EditContact, { action as editAction } from './data_explorer/routes/edit.jsx'
-import { action as destroyAction } from './data_explorer/routes/destroy.jsx'
+// import { action as destroyAction } from './data_explorer/routes/destroy.jsx'
 import ErrorPage from './data_explorer/routes/error-page.jsx'
 
 import './data_explorer/css/main.css'
@@ -19,7 +19,7 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <ErrorPage />,
     loader: rootLoader,
-    action: rootAction,
+    // action: rootAction,
     children: [
       // pathless route allows encapsulated definition without introducing a new path segment in the url
       {
@@ -41,11 +41,11 @@ const router = createBrowserRouter([
             loader: contactLoader,
             action: editAction,
           },
-          {
-            path: "contacts/:contactId/destroy",
-            action: destroyAction,
-            errorElement: <div>Oops! There was an error.</div>,
-          },
+          // {
+          //   path: "contacts/:contactId/destroy",
+          //   action: destroyAction,
+          //   errorElement: <div>Oops! There was an error.</div>,
+          // },
         ]
       },
 

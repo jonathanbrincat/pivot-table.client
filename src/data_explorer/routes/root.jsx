@@ -3,23 +3,14 @@ import { Link, NavLink, Outlet, useNavigation, useSubmit, useLoaderData, Form, r
 import { getContacts, createContact } from '../js/services/contacts'
 import { getProjects } from '../js/services/projectService'
 
-// export async function loader() {
-// 	const contacts = await getContacts()
-// 	return { contacts }
-// }
-
 export async function loader({ request }) {
 	const url = new URL(request.url)
 	const q = url.searchParams.get('q')
+
 	const contacts = await getContacts(q)
 	const projects = await getProjects()
-	return { contacts, q, projects }
-}
 
-export async function action() {
-	const contact = await createContact()
-	// return { contact }
-	return redirect(`/contacts/${contact.id}/edit`)
+	return { contacts, q, projects }
 }
 
 export default function Root() {
@@ -31,9 +22,9 @@ export default function Root() {
 		navigation.location &&
 		new URLSearchParams(navigation.location.search).has('q')
 
-	useEffect(() => {
-		document.getElementById("q").value = q
-	}, [q])
+	// useEffect(() => {
+	// 	document.getElementById("q").value = q
+	// }, [q])
 
 	return (
 		<>
@@ -41,8 +32,7 @@ export default function Root() {
 				<h1><Link to={`/`}>SBX beta feature development</Link></h1>
 
 				<div>
-					{/* <form id="search-form" role="search"> */}
-					<Form id="search-form" role="search">
+					{/* <Form id="search-form" role="search">
 						<input
 							id="q"
 							className={searching ? "loading" : ""}
@@ -67,19 +57,14 @@ export default function Root() {
 							className="sr-only"
 							aria-live="polite"
 						></div>
-					</Form>
-
-					{/* <Form method="post">
-						<button type="submit">New</button>
 					</Form> */}
 				</div>
 
 				<nav>
-					{contacts.length ? (
+					{/* {contacts.length ? (
 						<ul>
 							{contacts.map((contact) => (
 								<li key={contact.id}>
-									{/* <Link to={`contacts/${contact.id}`}> */}
 									<NavLink
 										className={({ isActive, isPending }) =>
 											isActive
@@ -106,7 +91,7 @@ export default function Root() {
 						<p>
 							<i>No contacts</i>
 						</p>
-					)}
+					)} */}
 
 					{projects.length ? (
 						<ul>
