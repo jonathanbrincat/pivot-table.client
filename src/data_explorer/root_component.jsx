@@ -5,7 +5,6 @@ import PivotTableUI from '../@streetbees/pivotTable'
 import TableRenderers from '../@streetbees/pivotTable/components/renderers/TableRenderers'
 import createChartjsRenderers from '../@streetbees/pivotTable/components/renderers/ChartjsRenderers'
 import useData from './hooks/useData'
-// import useTaxonomy from './hooks/useTaxonomy'
 import useTreeNodes from './hooks/useTreeNodes'
 import { aggregators, aggregatorTemplates } from '../@streetbees/pivotTable/js/Utilities'
 import { streetbeesAggregator, usFmtInt } from './js/streetbeesAggregator'
@@ -31,13 +30,10 @@ const options = {
 // 	return updateContact(params.contactId)
 // }
 
-// const PROJECT = '34725_34727_colgate_oralcare_2'
-
 export default function DataExplorer({...props}) {
 	const { uid, taxonomy } = props
 
 	const [data] = useData(uid)
-	// const [taxonomy] = useTaxonomy(PROJECT) // preflight request to calibrate the consumption of the data and the construction of a UI around it
 	const [dimensionCollection, setDimensionCollection] = useState({})
 	const [dataset, setDataset] = useState([])
 
@@ -74,11 +70,6 @@ export default function DataExplorer({...props}) {
 	useEffect(() => {
 		if (isEmptyObject(taxonomy)) return
 
-		// JB: going to be broken
-		// => needs to be this shape {"dimension-1": ["attribute-1-1", "attribute-1-2"], "dimension-2": ["attribute-2-1", "attribute-2-2"]}
-		// setDimensionCollection(
-		// 	Object.fromEntries(taxonomy?.['dimensions'])
-		// )
 		setDimensionCollection(
 			Object.fromEntries(
 				taxonomy?.['dimensions'].map(({ label, attributes }) => [
@@ -88,20 +79,10 @@ export default function DataExplorer({...props}) {
 			)
 		)
 
-		// JB: going to be broken
-		// => needs to be this shape [["dimension-1", []], ["dimension-2", []]]
-		// setDatasetFilters(
-		// 	taxonomy?.['dimensions']?.map(
-		// 		([dimension]) => [dimension, []]
-		// 	)
-		// )
 		setDatasetFilters(
 			taxonomy?.['dimensions']?.map(({ label }) => [label, []])
 		)
 
-		// JB: going to be broken
-		// => needs to be this shape [["key_variable-1", ["attribute-1-1", "attribute-1-2"]], ["key_variable-2", ["attribute-2-1", "attribute-2-2"]]]
-		// setTreeNodes(taxonomy?.['key_variables'])
 		setTreeNodes(
 			taxonomy?.['key_variables'].map(({ label, attributes }) => [
 				label,
