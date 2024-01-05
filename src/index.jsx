@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Root, { loader as rootLoader } from './data_explorer/routes/root'
+import Root from './data_explorer/routes/root'
 import ErrorPage from './data_explorer/routes/error-page'
 import Index from './data_explorer/routes/projects/index'
 import Project, { loader as projectLoader } from './data_explorer/routes/projects/project'
@@ -13,7 +13,6 @@ const router = createBrowserRouter([
     path: '/',
     element: <Root />,
     errorElement: <ErrorPage />,
-    loader: rootLoader,
     children: [
       {
         errorElement: <ErrorPage />,
