@@ -1,6 +1,5 @@
 const PROTOCOL = '//'
-// const DOMAIN = 'insights-bot-api-8be7caff.dev-bees.com'
-const DOMAIN = 'localhost:4000'
+const DOMAIN = 'insights-bot-api-8be7caff.dev-bees.com'
 const SERVICE = 'v1/explore_data'
 export const API = `${PROTOCOL}${DOMAIN}/${SERVICE}`
 
