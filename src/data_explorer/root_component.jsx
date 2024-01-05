@@ -65,16 +65,10 @@ export default function DataExplorer({...props}) {
 			!(!isEmptyObject(question)
 				&& keyVariableCollection.length)
 		) return
-		console.log('...LOAD DATA ')
-
-		// console.log(dimensionCollection)
-		// console.log('question :: ', question)
-		// console.log('keyVariableCollection :: ', keyVariableCollection)
 
 		async function load() {
 			try {
 				const dimensionIdCollection = [question, ...keyVariableCollection].map(({ id }) => id).filter(Boolean)
-				console.log('dimensionIdCollection :: ', dimensionIdCollection.join())
 
 				setDataset(await getData(uid, dimensionIdCollection))
 			} catch (error) {
@@ -102,7 +96,6 @@ export default function DataExplorer({...props}) {
 			dimensions.map(({ label }) => [label, []])
 		)
 
-		// JB: 1. intervene here to modify; inclusion of id
 		setTreeNodes(
 			key_variables.map(({ id, label, attributes }) => [
 				id,
@@ -144,17 +137,11 @@ export default function DataExplorer({...props}) {
 	* Control logic driving filtering of key variables and associated attributes and delivering conversion back to a format that can be consumed by the pivot table component
 	*/
 	useEffect(() => {
-		// console.log('dimensionCollection >> ', dimensionCollection)
-		// console.log('selectedTreeNodeKeys >> ', selectedTreeNodeKeys)
-
 		// Identify which tree nodes have been checked
 		const [selectedDimensions, selectedAttributes] = Object.keys(selectedTreeNodeKeys).reduce((collection, key) => {
 
 			// Node = Dimension(Key variable)
-			// JB: 3. intervene here to modify
-			// if (Object.keys(dimensionCollection).includes(key)) {
-				if (Object.keys(dimensionCollection).includes(JSON.parse(key)?.label)) {
-				// collection[0].push(key)
+			if (Object.keys(dimensionCollection).includes(JSON.parse(key)?.label)) {
 				collection[0].push(JSON.parse(key))
 			}
 			// Node = Attribute(filter)
@@ -184,8 +171,6 @@ export default function DataExplorer({...props}) {
 				}
 			))
 		)
-
-		// console.log('selectedDimensions :: ', selectedDimensions)
 
 		setKeyVariableCollection(selectedDimensions)
 		setKeyVariablesFilters(deselectedAttributes)
@@ -510,18 +495,6 @@ export default function DataExplorer({...props}) {
 								<p className="card__responses">{dataset.length} <span className="uppercase">Responses</span></p>
 							</header>
 						}
-
-						<p style={{ fontSize: '8px' }}>Question :: <code>{JSON.stringify(!isEmptyObject(question) ? [question.label] : [], null, 2)}</code></p>
-						<p style={{ fontSize: '8px' }}>Key Variables :: <code>{JSON.stringify(keyVariableCollection.map(({ label }) => label).sort(), null, 2)}</code></p>
-						<p style={{ fontSize: '8px' }}>Filters :: <code>{
-							JSON.stringify(!isEmptyObject(question) ? {
-								[question.label]: questionFilters.reduce(
-									(obj, item) => Object.assign(obj, { [item]: true })
-									, {}),
-								...keyVariablesFilters,
-							} : {}, null, 2)
-						}</code></p>
-						{/* <p style={{ fontSize: '8px' }}>Dataset :: <code>{JSON.stringify(dataset, null, 2)}</code></p> */}
 
 						<PivotTableUI
 							data={dataset} // REQUIRED - everything else is optional

@@ -3,6 +3,7 @@
 @import "bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons";
 @import "primereact/resources/themes/lara-light-indigo/theme.css";
+@import "demo-supplement.css";
 @import "sbx-vars.css";
 @import "ui.css";
 @import "pivot-table.css";

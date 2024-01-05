@@ -23,3 +23,5 @@ yarn run build
 ```
 
 The build will be available on `http://localhost:5173`.
+
+To navigate to a project your must supply a valid project identifier. The route is of the signature `http://localhost:5173/projects/<project_id>`.

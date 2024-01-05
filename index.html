@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <title>SBX | Data Explorer</title>
+    <title>SBX | Data Explorer (beta)</title>
 
     <style>
       :root {
@@ -25,23 +25,27 @@
 
       html, body {
         font-family: Arial, Helvetica, sans-serif;
-      }
-
-      body {
-        margin: 0;
-        min-width: 320px;
         min-height: 100vh;
       }
 
       main {
-        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 0;
+        min-height: 100vh;
+      }
+
+      #app {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
       }
     </style>
   </head>
 
   <body>
     <main>
-      <section class="container">
+      <section class="container d-flex flex-column flex-grow-1">
         <h1 style="font-size: 4rem; font-weight: 300; margin-bottom: 3rem;">Explore the Data</h1>
         
         <div id="app" data-app="DataExplorer" />

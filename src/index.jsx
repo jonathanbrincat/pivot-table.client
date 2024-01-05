@@ -3,11 +3,10 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Root, { loader as rootLoader } from './data_explorer/routes/root'
 import ErrorPage from './data_explorer/routes/error-page'
-import Index from './data_explorer/routes/index'
-import Project, { loader as projectLoader } from './data_explorer/routes/project'
+import Index from './data_explorer/routes/projects/index'
+import Project, { loader as projectLoader } from './data_explorer/routes/projects/project'
 
 import './data_explorer/css/main.css'
-import './data_explorer/css/react-router.css'
 
 const router = createBrowserRouter([
   {
@@ -16,7 +15,6 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     loader: rootLoader,
     children: [
-      // pathless route allows encapsulated definition without introducing a new path segment in the url
       {
         errorElement: <ErrorPage />,
         children: [
@@ -25,7 +23,7 @@ const router = createBrowserRouter([
             element: <Index />
           },
           {
-            path: "projects/:projectId",
+            path: 'projects/:projectId',
             element: <Project />,
             loader: projectLoader,
           },
