@@ -8,7 +8,6 @@ import useData from './hooks/useData'
 import useTreeNodes from './hooks/useTreeNodes'
 import { aggregators, aggregatorTemplates } from '../@streetbees/pivotTable/js/Utilities'
 import { streetbeesAggregator, usFmtInt } from './js/streetbeesAggregator'
-import { isEmptyObject } from './js/utility'
 import STATIC, { colors as palette  } from './js/constants'
 
 import { Dialog as PrimeDialog } from 'primereact/dialog'
@@ -75,11 +74,8 @@ export default function DataExplorer({...props}) {
 	 * Calibrated schema for composition and hydration purposes over specific applications; create the node tree structure compatible with rendering treeview(PrimeReact) UI
 	 */
 	useEffect(() => {
-		// if (isEmptyObject(taxonomy)) return
-
 		setDimensionCollection(
 			Object.fromEntries(
-				// taxonomy?.['dimensions'].map(({ label, attributes }) => [
 				dimensions.map(({ label, attributes }) => [
 					label,
 					attributes.map((attribute) => attribute.label),
@@ -88,18 +84,15 @@ export default function DataExplorer({...props}) {
 		)
 
 		setDatasetFilters(
-			// taxonomy?.['dimensions']?.map(({ label }) => [label, []])
 			dimensions.map(({ label }) => [label, []])
 		)
 
 		setTreeNodes(
-			// taxonomy?.['key_variables'].map(({ label, attributes }) => [
 			key_variables.map(({ label, attributes }) => [
 				label,
 				attributes.map((attribute) => attribute.label),
 			])
 		)
-	// }, [taxonomy])
 	}, [dimensions, key_variables])
 
 	/**
@@ -245,7 +238,6 @@ export default function DataExplorer({...props}) {
 				<PrimeDialog header="Apply data restrictions" visible={isDatasetFilters} style={{ width: '75vw' }} onHide={() => setIsDatasetFilters(false)}>
 					<div className="field__global-filters">
 						{
-							// taxonomy?.['dimensions']?.map((dimension, i) => {
 							dimensions.map((dimension, i) => {
 								const $nodes = [
 									<dt className="global-filters__list-item-header" key={`header-${dimension.id}`}>
@@ -374,7 +366,6 @@ export default function DataExplorer({...props}) {
 
 			<div className="fieldset__global-filters">
 				{
-					// !!taxonomy?.['dimensions']?.length &&
 					!!dimensions.length &&
 					<button
 						className="btn btn-primary"
@@ -386,7 +377,6 @@ export default function DataExplorer({...props}) {
 
 			<div className="fieldset__explore-data">
 				{
-					// !!taxonomy?.['questions']?.length &&
 					!!questions.length &&
 					<div className="field__question">
 						<div className="ui__field">
@@ -429,7 +419,6 @@ export default function DataExplorer({...props}) {
 								>
 									<option value="">Make your selection&hellip;</option>
 									{
-										// taxonomy['questions'].map((dimension) => (
 										questions.map((dimension) => (
 											<option value={dimension.label} key={dimension.id}>{dimension.label}</option>
 										))
@@ -443,7 +432,6 @@ export default function DataExplorer({...props}) {
 				<hr className="ui__vertical-rule" />
 
 				{
-					// !!taxonomy?.['key_variables']?.length &&
 					!!key_variables.length &&
 					<div className="field__key-variables">
 						<div className="ui__field">
