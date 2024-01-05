@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo } from 'react'
-// import { Form } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import PivotTableUI from '../@streetbees/pivotTable'
 import TableRenderers from '../@streetbees/pivotTable/components/renderers/TableRenderers'
@@ -24,11 +23,6 @@ const options = {
 	aggregatorName: STATIC.AGGREGATOR.uniqueCountOfGrandTotal,
 	unusedOrientationCutoff: Infinity,
 }
-
-// export async function action({ request, params }) {
-// 	let formData = await request.formData()
-// 	return updateContact(params.contactId)
-// }
 
 export default function DataExplorer({...props}) {
 	const { uid, taxonomy: { questions, key_variables } } = props
@@ -90,13 +84,6 @@ export default function DataExplorer({...props}) {
 
 		load()
 	}, [question, keyVariableCollection, uid])
-
-	/**
-	 * When a data source loads assign it as the working dataset by default behaviour
-	 */
-	// useEffect(() => {
-	// 	setDataset(data)
-	// }, [data])
 
 	/**
 	 * Calibrated schema for composition and hydration purposes over specific applications; create the node tree structure compatible with rendering treeview(PrimeReact) UI
@@ -484,21 +471,6 @@ export default function DataExplorer({...props}) {
 					</div>
 				}
 			</div>
-
-			{/* <Form
-				action="update"
-				onSubmit={(event) => {
-					if (
-						!confirm(
-							"Update the data"
-						)
-					) {
-						event.preventDefault()
-					}
-				}}
-			>
-				<button type="submit">Update</button>
-			</Form> */}
 
 			{
 				(!isEmptyObject(question) && !!keyVariableCollection?.length) &&

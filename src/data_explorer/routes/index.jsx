@@ -1,6 +1,6 @@
 export default function Index() {
 	return (
-		<p id="zero-state">
+		<p id="null">
 			This is a demo for the SBX Data Explorer
 		</p>
 	)
