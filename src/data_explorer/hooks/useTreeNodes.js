@@ -2,13 +2,16 @@ import { useState } from 'react'
 
 function parser(data) {
   data = (Array.isArray(data) && data) || []
+
+  console.log('data => ', data)
   
-  return data.reduce((collection, [key, item]) => {
+  return data.reduce((collection, [id, key, item]) => {
     const children = item?.length
-      ? item.map((child) => ({ key: JSON.stringify([key, child]), label: child, parent: key, parentId: key }))
+      ? item.map((child) => ({ key: JSON.stringify([key, child]), label: child}))
       : []
 
-    return [...collection, { key: key, label: key, children: children }]
+    // return [...collection, { key: key, label: key, children: children }]
+    return [...collection, { key: JSON.stringify({id, label: key}), label: key, children: children }] // JB: 2. intervene here to modify; stringify array
   }, [])
 }
 

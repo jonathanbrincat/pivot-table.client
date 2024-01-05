@@ -4,10 +4,11 @@ import PropTypes from 'prop-types'
 import PivotTableUI from '../@streetbees/pivotTable'
 import TableRenderers from '../@streetbees/pivotTable/components/renderers/TableRenderers'
 import createChartjsRenderers from '../@streetbees/pivotTable/components/renderers/ChartjsRenderers'
-import useData from './hooks/useData'
 import useTreeNodes from './hooks/useTreeNodes'
+import { getData } from './js/services/dataService'
 import { aggregators, aggregatorTemplates } from '../@streetbees/pivotTable/js/Utilities'
 import { streetbeesAggregator, usFmtInt } from './js/streetbeesAggregator'
+import { isEmptyObject } from './js/utility'
 import STATIC, { colors as palette  } from './js/constants'
 
 import { Dialog as PrimeDialog } from 'primereact/dialog'
@@ -32,11 +33,10 @@ const options = {
 export default function DataExplorer({...props}) {
 	const { uid, taxonomy: { questions, key_variables } } = props
 
-	const [data] = useData(uid)
 	const [dimensionCollection, setDimensionCollection] = useState({})
 	const [dataset, setDataset] = useState([])
 
-	const [question, setQuestion] = useState('') // The selected question => singular
+	const [question, setQuestion] = useState({}) // The selected question => singular
 	const [keyVariableCollection, setKeyVariableCollection] = useState([]) // The selected key variables => multiples
 
 	const [datasetFilters, setDatasetFilters] = useState([])
@@ -64,11 +64,39 @@ export default function DataExplorer({...props}) {
 	}, [questions, key_variables])
 
 	/**
-	 * When a data source loads assign it as the working dataset by default behaviour
+	 * Retrieve data from API endpoint
 	 */
 	useEffect(() => {
-		setDataset(data)
-	}, [data])
+		if (
+			!(!isEmptyObject(question)
+				&& keyVariableCollection.length)
+		) return
+		console.log('...LOAD DATA ')
+
+		// console.log(dimensionCollection)
+		// console.log('question :: ', question)
+		// console.log('keyVariableCollection :: ', keyVariableCollection)
+
+		async function load() {
+			try {
+				const dimensionIdCollection = [question, ...keyVariableCollection].map(({ id }) => id).filter(Boolean)
+				console.log('dimensionIdCollection :: ', dimensionIdCollection.join())
+
+				setDataset(await getData(uid, dimensionIdCollection))
+			} catch (error) {
+				console.log('Something went wrong retrieving the data from the endpoint :: ', error)
+			}
+		}		
+
+		load()
+	}, [question, keyVariableCollection, uid])
+
+	/**
+	 * When a data source loads assign it as the working dataset by default behaviour
+	 */
+	// useEffect(() => {
+	// 	setDataset(data)
+	// }, [data])
 
 	/**
 	 * Calibrated schema for composition and hydration purposes over specific applications; create the node tree structure compatible with rendering treeview(PrimeReact) UI
@@ -87,8 +115,10 @@ export default function DataExplorer({...props}) {
 			dimensions.map(({ label }) => [label, []])
 		)
 
+		// JB: 1. intervene here to modify; inclusion of id
 		setTreeNodes(
-			key_variables.map(({ label, attributes }) => [
+			key_variables.map(({ id, label, attributes }) => [
+				id,
 				label,
 				attributes.map((attribute) => attribute.label),
 			])
@@ -97,7 +127,9 @@ export default function DataExplorer({...props}) {
 
 	/**
 	 * Cuts the full dataset by the dimensions provided to produce a modified dataset restricted by inclusion
+	 * DEVNOTE: Missing provision. Not going to work with the updated API. Would need to be partitioned on the server anyway.
 	 */
+	/*
 	useEffect(() => {
 		// If there are no filters selected don't bother
 		if (!datasetFilters.length) return setDataset(data)
@@ -119,17 +151,24 @@ export default function DataExplorer({...props}) {
 
 		setDataset([header, ...results])
 	}, [datasetFilters])
+	*/
 
 	/**
 	* Control logic driving filtering of key variables and associated attributes and delivering conversion back to a format that can be consumed by the pivot table component
 	*/
 	useEffect(() => {
+		// console.log('dimensionCollection >> ', dimensionCollection)
+		// console.log('selectedTreeNodeKeys >> ', selectedTreeNodeKeys)
+
 		// Identify which tree nodes have been checked
 		const [selectedDimensions, selectedAttributes] = Object.keys(selectedTreeNodeKeys).reduce((collection, key) => {
 
 			// Node = Dimension(Key variable)
-			if (Object.keys(dimensionCollection).includes(key)) {
-				collection[0].push(key)
+			// JB: 3. intervene here to modify
+			// if (Object.keys(dimensionCollection).includes(key)) {
+				if (Object.keys(dimensionCollection).includes(JSON.parse(key)?.label)) {
+				// collection[0].push(key)
+				collection[0].push(JSON.parse(key))
 			}
 			// Node = Attribute(filter)
 			else if (Array.isArray(JSON.parse(key))) {
@@ -159,6 +198,8 @@ export default function DataExplorer({...props}) {
 			))
 		)
 
+		// console.log('selectedDimensions :: ', selectedDimensions)
+
 		setKeyVariableCollection(selectedDimensions)
 		setKeyVariablesFilters(deselectedAttributes)
 
@@ -168,11 +209,11 @@ export default function DataExplorer({...props}) {
 	* Management of the checkbox indeterminate state(Question dimension attributes to filter upon)
 	*/
 	useEffect(() => {
-		if (!question) return
+		if (isEmptyObject(question)) return
 
 		setIsIndeterminate(
 			!!questionFilters.length &&
-			(questionFilters.length !== dimensionCollection[question].length)
+			(questionFilters.length !== dimensionCollection[question.label].length)
 		)
 	}, [questionFilters])
 
@@ -182,7 +223,7 @@ export default function DataExplorer({...props}) {
 	useEffect(() => {
 		if (!questionFilters.length) {
 			setIsAllQuestionFilters(false)
-		} else if (questionFilters.length === dimensionCollection[question]?.length) {
+		} else if (questionFilters.length === dimensionCollection[question.label]?.length) {
 			setIsAllQuestionFilters(true)
 		}
 	}, [isIndeterminate])
@@ -191,11 +232,11 @@ export default function DataExplorer({...props}) {
 	* Computed state for selecting or deselecting all filters(Question dimensions attributes to filter upon)
 	*/
 	useEffect(() => {
-		if (!dimensionCollection[question]) return
+		if (!dimensionCollection[question.label]) return
 
 		setQuestionFilters(
 			isAllQuestionFilters
-				? dimensionCollection[question]
+				? dimensionCollection[question.label]
 				: []
 		)
 	}, [isAllQuestionFilters])
@@ -298,7 +339,7 @@ export default function DataExplorer({...props}) {
 
 				<PrimeSidebar className="ui__sidebar--left" header={sidebarHeader('Filter the responses')} visible={isQuestionFilters} position="left" onHide={() => setIsQuestionFilters(false)}>
 					{
-						dimensionCollection?.[question]?.length &&
+						dimensionCollection?.[question.label]?.length &&
 						<aside>
 							<dl className="filters__list">
 								<dt className="filters__list-item--header">
@@ -314,7 +355,7 @@ export default function DataExplorer({...props}) {
 								</dt>
 
 								{
-									dimensionCollection?.[question].map((item) => (
+									dimensionCollection?.[question.label].map((item) => (
 										<dd className="filters__list-item" key={[question, item]}>
 											<label className="ui__checkbox">
 												<input
@@ -391,11 +432,11 @@ export default function DataExplorer({...props}) {
 									id="tooltip__question-filters"
 									className="btn btn-primary"
 									icon={`pi
-										${question || dimensionCollection[question]?.length
+										${!isEmptyObject(question) || dimensionCollection[question.label]?.length
 											? 'pi-filter'
 											: 'pi-filter-slash'}`
 									}
-									disabled={!(question || dimensionCollection[question]?.length)}
+									disabled={!(!isEmptyObject(question) || dimensionCollection[question]?.length)}
 									title="Apply filters"
 									aria-label="Apply filters"
 									onClick={() => setIsQuestionFilters(true)}
@@ -403,7 +444,7 @@ export default function DataExplorer({...props}) {
 									data-pr-position="bottom"
 								>
 									<i className={`bi
-										${question || dimensionCollection[question]?.length
+										${!isEmptyObject(question) || dimensionCollection[question]?.length
 											? 'bi-funnel'
 											: 'bi-funnel-fill'}`
 										}
@@ -414,13 +455,13 @@ export default function DataExplorer({...props}) {
 									id="field__questions"
 									className="form-select"
 									name="field__questions"
-									value={question}
-									onChange={(event) => setQuestion(event.target.value)}
+									value={JSON.stringify(question)}
+									onChange={(event) => setQuestion(JSON.parse(event.target.value))}
 								>
-									<option value="">Make your selection&hellip;</option>
+									<option value={JSON.stringify({})}>Make your selection&hellip;</option>
 									{
-										questions.map((dimension) => (
-											<option value={dimension.label} key={dimension.id}>{dimension.label}</option>
+										questions.map(({ id, label}) => (
+											<option value={JSON.stringify({id, label})} key={id}>{label}</option>
 										))
 									}
 								</select>
@@ -460,7 +501,7 @@ export default function DataExplorer({...props}) {
 			</Form> */}
 
 			{
-				(question && !!keyVariableCollection?.length) &&
+				(!isEmptyObject(question) && !!keyVariableCollection?.length) &&
 				<>
 					<div className="pivot-table__renderer ui__toggle">
 						<label className="ui__radio">
@@ -492,11 +533,23 @@ export default function DataExplorer({...props}) {
 						{
 							activeRenderer === STATIC.RENDERER.chart &&
 							<header className="card__header">
-								<h3 className="card__heading">{question}</h3>
+								<h3 className="card__heading">{question.label}</h3>
 
 								<p className="card__responses">{dataset.length} <span className="uppercase">Responses</span></p>
 							</header>
 						}
+
+						<p style={{ fontSize: '8px' }}>Question :: <code>{JSON.stringify(!isEmptyObject(question) ? [question.label] : [], null, 2)}</code></p>
+						<p style={{ fontSize: '8px' }}>Key Variables :: <code>{JSON.stringify(keyVariableCollection.map(({ label }) => label).sort(), null, 2)}</code></p>
+						<p style={{ fontSize: '8px' }}>Filters :: <code>{
+							JSON.stringify(!isEmptyObject(question) ? {
+								[question.label]: questionFilters.reduce(
+									(obj, item) => Object.assign(obj, { [item]: true })
+									, {}),
+								...keyVariablesFilters,
+							} : {}, null, 2)
+						}</code></p>
+						{/* <p style={{ fontSize: '8px' }}>Dataset :: <code>{JSON.stringify(dataset, null, 2)}</code></p> */}
 
 						<PivotTableUI
 							data={dataset} // REQUIRED - everything else is optional
@@ -511,13 +564,13 @@ export default function DataExplorer({...props}) {
 								'SB Count % of column': aggregatorTemplates.fractionOf(streetbeesAggregator(), 'col'),
 							}}
 
-							cols={keyVariableCollection.sort()}
-							rows={question ? [question] : []}
+							cols={keyVariableCollection.map(({ label }) => label).sort()}
+							rows={!isEmptyObject(question) ? [question.label] : []}
 
 							rendererName={activeRenderer}
 							valueFilter={
-								question ? {
-									[question]: questionFilters.reduce(
+								!isEmptyObject(question) ? {
+									[question.label]: questionFilters.reduce(
 										(obj, item) => Object.assign(obj, { [item]: true })
 										, {}),
 									...keyVariablesFilters,

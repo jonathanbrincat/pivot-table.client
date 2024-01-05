@@ -11,8 +11,8 @@ export async function getTaxonomy(uid) {
   throw response
 }
 
-export async function getData(uid) {
-  const response = await fetch(`${API}/data/${uid}`)
+export async function getData(uid, dimensionIdCollection) {
+  const response = await fetch(`${API}/data/${uid}?select=${dimensionIdCollection.join()}`)
   if (response.ok) return response.json()
 
   throw response
