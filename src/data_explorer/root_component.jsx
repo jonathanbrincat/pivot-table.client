@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 // import { Form } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import PivotTableUI from '../@streetbees/pivotTable'
@@ -31,7 +31,7 @@ const options = {
 // }
 
 export default function DataExplorer({...props}) {
-	const { uid, taxonomy } = props
+	const { uid, taxonomy: { questions, key_variables } } = props
 
 	const [data] = useData(uid)
 	const [dimensionCollection, setDimensionCollection] = useState({})
@@ -58,6 +58,13 @@ export default function DataExplorer({...props}) {
 	const [activeRenderer, setActiveRenderer] = useState(STATIC.RENDERER.table)
 
 	/**
+	 * Assignment provokes referential inequality upon render and dependency of useEffect
+	 */
+	const dimensions = useMemo(() => {
+		return [...questions ?? [], ...key_variables ?? []]
+	}, [questions, key_variables])
+
+	/**
 	 * When a data source loads assign it as the working dataset by default behaviour
 	 */
 	useEffect(() => {
@@ -68,11 +75,12 @@ export default function DataExplorer({...props}) {
 	 * Calibrated schema for composition and hydration purposes over specific applications; create the node tree structure compatible with rendering treeview(PrimeReact) UI
 	 */
 	useEffect(() => {
-		if (isEmptyObject(taxonomy)) return
+		// if (isEmptyObject(taxonomy)) return
 
 		setDimensionCollection(
 			Object.fromEntries(
-				taxonomy?.['dimensions'].map(({ label, attributes }) => [
+				// taxonomy?.['dimensions'].map(({ label, attributes }) => [
+				dimensions.map(({ label, attributes }) => [
 					label,
 					attributes.map((attribute) => attribute.label),
 				])
@@ -80,16 +88,19 @@ export default function DataExplorer({...props}) {
 		)
 
 		setDatasetFilters(
-			taxonomy?.['dimensions']?.map(({ label }) => [label, []])
+			// taxonomy?.['dimensions']?.map(({ label }) => [label, []])
+			dimensions.map(({ label }) => [label, []])
 		)
 
 		setTreeNodes(
-			taxonomy?.['key_variables'].map(({ label, attributes }) => [
+			// taxonomy?.['key_variables'].map(({ label, attributes }) => [
+			key_variables.map(({ label, attributes }) => [
 				label,
 				attributes.map((attribute) => attribute.label),
 			])
 		)
-	}, [taxonomy])
+	// }, [taxonomy])
+	}, [dimensions, key_variables])
 
 	/**
 	 * Cuts the full dataset by the dimensions provided to produce a modified dataset restricted by inclusion
@@ -234,7 +245,8 @@ export default function DataExplorer({...props}) {
 				<PrimeDialog header="Apply data restrictions" visible={isDatasetFilters} style={{ width: '75vw' }} onHide={() => setIsDatasetFilters(false)}>
 					<div className="field__global-filters">
 						{
-							taxonomy?.['dimensions']?.map((dimension, i) => {
+							// taxonomy?.['dimensions']?.map((dimension, i) => {
+							dimensions.map((dimension, i) => {
 								const $nodes = [
 									<dt className="global-filters__list-item-header" key={`header-${dimension.id}`}>
 										<label className="ui__checkbox">
@@ -362,7 +374,8 @@ export default function DataExplorer({...props}) {
 
 			<div className="fieldset__global-filters">
 				{
-					!!taxonomy?.['dimensions']?.length &&
+					// !!taxonomy?.['dimensions']?.length &&
+					!!dimensions.length &&
 					<button
 						className="btn btn-primary"
 						onClick={() => setIsDatasetFilters(true)}>
@@ -373,7 +386,8 @@ export default function DataExplorer({...props}) {
 
 			<div className="fieldset__explore-data">
 				{
-					!!taxonomy?.['questions']?.length &&
+					// !!taxonomy?.['questions']?.length &&
+					!!questions.length &&
 					<div className="field__question">
 						<div className="ui__field">
 							<label className="txt__instruction" htmlFor="field__questions">
@@ -415,7 +429,8 @@ export default function DataExplorer({...props}) {
 								>
 									<option value="">Make your selection&hellip;</option>
 									{
-										taxonomy['questions'].map((dimension) => (
+										// taxonomy['questions'].map((dimension) => (
+										questions.map((dimension) => (
 											<option value={dimension.label} key={dimension.id}>{dimension.label}</option>
 										))
 									}
@@ -428,7 +443,8 @@ export default function DataExplorer({...props}) {
 				<hr className="ui__vertical-rule" />
 
 				{
-					!!taxonomy?.['key_variables']?.length &&
+					// !!taxonomy?.['key_variables']?.length &&
+					!!key_variables.length &&
 					<div className="field__key-variables">
 						<div className="ui__field">
 							<button className="btn btn-primary" onClick={() => setIsKeyVariables(true)}>
@@ -531,7 +547,7 @@ export default function DataExplorer({...props}) {
 
 DataExplorer.defaultProps = {
 	uid: '',
-	taxonomy: {},
+	taxonomy: { questions:[], key_variables: [] },
 }
 
 DataExplorer.propTypes = {
