@@ -1,7 +1,7 @@
 /*
 * CSS Variables overrides
 **/
-[data-app="DataExplorer"] {
+[data-app="App"] {
   --swatch-primary: var(--amber);
   --swatch-primary-lighten: var(--yellow);
   --swatch-primary-darken: var(--orange);
@@ -12,25 +12,9 @@
 }
 
 /*
-* Overrides
-**/
-.pivot__renderer,
-.pivot__aggregator,
-.pivot__criterion,
-.pivot__axis {
-  display: none !important;
-}
-
-/*
 * THEMED Pivot Table UI
 **/
 .pivot__ui {
-  grid-template-areas:
-    'renderer sortBy'
-    'output output';
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 24px;
-  padding: 24px;
   margin: 0;
 }
 
@@ -51,9 +35,6 @@
 /* 
 * Data Explorer
 **/
-.pvtTable {
-}
-
 .pvtTable thead tr:first-child th:first-child {
   background-color: transparent;
   border-top-color: transparent;

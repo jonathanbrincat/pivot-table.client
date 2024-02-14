@@ -1,6 +1,6 @@
 import React from 'react'
 import TestRenderer from 'react-test-renderer';
-import Root from "./root_component";
+import Root from './App'
 
 test('Contains You clicked', () => {
   const renderedComponent = TestRenderer.create(

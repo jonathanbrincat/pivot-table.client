@@ -144,7 +144,7 @@ Dimension.defaultProps = {
 }
 
 Dimension.propTypes = {
-  name: PropTypes.string.isRequired,
+  // name: PropTypes.string.isRequired, // cc. BUG line. 181 index.js - empty dimensions for axis
   setAllValuesInFilter: PropTypes.func.isRequired,
   addValuesToFilter: PropTypes.func.isRequired,
   removeValuesFromFilter: PropTypes.func.isRequired,

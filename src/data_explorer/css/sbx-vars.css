@@ -1,8 +1,3 @@
-/* => app/assets/stylessheets/application.styles.scss */
-:root {
-  --bs-font-sans-serif: 'Lato', sans-serif;
-}
-
 /* => app/assets/stylesheets/colors.styles.scss */
 :root {
   --green-100: #d1e7db;

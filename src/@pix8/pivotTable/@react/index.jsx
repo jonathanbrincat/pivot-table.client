@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 import { ReactSortable } from 'react-sortablejs'
 import Dimension from './components/Dimension'
 import PivotTable from './components/PivotTable'
-import { PivotData, sortAs, getSort } from './js/Utilities'
-import { sortBy } from './js/constants'
+import PivotData from './js/PivotData'
+import { sortAs, getSort } from '../@core/js/utilities'
+import { sortBy } from '../@core/js/constants'
 
 import './index.css'
 
@@ -173,8 +174,11 @@ export default function PivotTableUI(props) {
   }
 
   function createCluster(items, onSortableChangeHandler) {
-    return (
-      Object.prototype.hasOwnProperty.call(items[0], 'name') &&
+    // console.log(items, ' :: ',items)
+    
+    const temp = (
+      // BUG: if no presets are supplied then UI isn't initialise with reactsortable; empty array won't have object to check for prop
+      // Object.prototype.hasOwnProperty.call(items[0], 'name') &&
       <ReactSortable
         className="dimension__list"
         tag="ul"
@@ -208,6 +212,9 @@ export default function PivotTableUI(props) {
         }
       </ReactSortable>
     )
+    // console.log(' :: ',temp)
+
+    return temp
   }
   
   return (
@@ -274,7 +281,7 @@ export default function PivotTableUI(props) {
 
         <div className="pivot__criterion">
           {
-            criterion?.length && createCluster(
+            !!criterion?.length && createCluster(
               criterion,
               (collection) => setCriterion(collection),
             )
@@ -283,7 +290,9 @@ export default function PivotTableUI(props) {
 
         <div className="pivot__axis pivot__axis-x">
           {
-            axisX?.length && createCluster(
+            // BUG: if no presets are supplied then UI isn't initialise with reactsortable
+            // !!axisX?.length && createCluster(
+            createCluster(
               axisX,
               (collection) => setAxisX(collection),
             )
@@ -292,7 +301,9 @@ export default function PivotTableUI(props) {
 
         <div className="pivot__axis pivot__axis-y">
           {
-            axisY?.length && createCluster(
+            // BUG: if no presets are supplied then UI isn't initialise with reactsortable
+            // !!axisY?.length && createCluster(
+            createCluster(
               axisY,
               (collection) => setAxisY(collection),
             )

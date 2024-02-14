@@ -1,10 +1,11 @@
 {
   "name": "sbx-data-explorer",
   "private": true,
+  "license": "UNLICENSED",
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "start": "yarn run dev",
+    "start": "npm run dev",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
@@ -12,9 +13,7 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
-    "bootstrap-icons": "^1.11.2",
     "chart.js": "^4.4.0",
-    "primereact": "^10.0.9",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",

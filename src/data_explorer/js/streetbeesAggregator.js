@@ -1,4 +1,4 @@
-import { numberFormat } from '../../@streetbees/pivotTable/js/Utilities'
+import { numberFormat } from '../../@pix8/pivotTable/@core/js/utilities'
 
 export const usFmt = numberFormat()
 export const usFmtInt = numberFormat({ digitsAfterDecimal: 0 })

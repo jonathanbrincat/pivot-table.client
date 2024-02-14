@@ -1,5 +1,5 @@
 import { useLoaderData } from 'react-router-dom'
-import DataExplorer from '../../root_component'
+import App from '../../App'
 import { getTaxonomy } from '../../js/services/dataService'
 
 export async function loader({ params }) {
@@ -19,6 +19,6 @@ export default function Project() {
 	const { uid, preflight } = useLoaderData()
 
 	return (
-		<DataExplorer uid={uid} taxonomy={preflight} />
+		<App uid={uid} taxonomy={preflight} />
 	)
 }

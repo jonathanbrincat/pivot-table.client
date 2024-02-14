@@ -1,4 +1,5 @@
-# SBX Data Explorer
+# Pix8 Data Explorer
+Copyright 2024 by pix8 Ltd. All rights reserved. No license granted. This is not free or open-source software. 
 
 Built upon the React + Vite boilerplate. Dec. 2023.
 

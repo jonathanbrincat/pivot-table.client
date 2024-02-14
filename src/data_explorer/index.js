@@ -1,6 +1,6 @@
-import RootComponent from "./root_component";
-import "./css/main.css";
+import RootComponent from './App'
+import './css/main.css'
 
-const NAME = "DataExplorer";
+const NAME = 'App'
 
-export default { NAME, RootComponent };
+export default { NAME, RootComponent }

@@ -1,4 +1,6 @@
-import * as utils from '../Utilities';
+import * as utils from '../utilities';
+import { derivers } from '../locales/en';
+import PivotData from '../PivotData';
 /* eslint-disable no-magic-numbers */
 
 /*
@@ -20,7 +22,7 @@ describe('  utils', function() {
   describe('.PivotData()', function() {
     describe('with no options', function() {
       const aoaInput = [['a', 'b'], [1, 2], [3, 4]];
-      const pd = new utils.PivotData({data: aoaInput});
+      const pd = new PivotData({data: aoaInput});
 
       it('has the correct grand total value', () =>
         expect(pd.getAggregator([], []).value()).toBe(2));
@@ -28,7 +30,7 @@ describe('  utils', function() {
 
     describe('with array-of-array input', function() {
       const aoaInput = [['a', 'b'], [1, 2], [3, 4]];
-      const pd = new utils.PivotData({
+      const pd = new PivotData({
         data: aoaInput,
         aggregatorName: 'Sum over Sum',
         vals: ['a', 'b'],
@@ -40,7 +42,7 @@ describe('  utils', function() {
 
     describe('with array-of-object input', function() {
       const aosInput = [{a: 1, b: 2}, {a: 3, b: 4}];
-      const pd = new utils.PivotData({
+      const pd = new PivotData({
         data: aosInput,
         aggregatorName: 'Sum over Sum',
         vals: ['a', 'b'],
@@ -52,7 +54,7 @@ describe('  utils', function() {
 
     describe('with ragged array-of-object input', function() {
       const raggedAosInput = [{a: 1}, {b: 4}, {a: 3, b: 2}];
-      const pd = new utils.PivotData({
+      const pd = new PivotData({
         data: raggedAosInput,
         aggregatorName: 'Sum over Sum',
         vals: ['a', 'b'],
@@ -67,7 +69,7 @@ describe('  utils', function() {
         record({a: 1, b: 2});
         record({a: 3, b: 4});
       };
-      const pd = new utils.PivotData({
+      const pd = new PivotData({
         data: functionInput,
         aggregatorName: 'Sum over Sum',
         vals: ['a', 'b'],
@@ -78,7 +80,7 @@ describe('  utils', function() {
     });
 
     describe('with rows/cols', function() {
-      const pd = new utils.PivotData({
+      const pd = new PivotData({
         data: fixtureData,
         rows: ['name', 'colour'],
         cols: ['trials', 'successes'],
@@ -140,7 +142,7 @@ describe('  utils', function() {
 
   describe('.aggregatorTemplates', function() {
     const getVal = (agg, vals) => {
-      return new utils.PivotData({
+      return new PivotData({
         data: fixtureData,
         aggregators: {agg},
         aggregatorName: 'agg',
@@ -341,7 +343,7 @@ describe('  utils', function() {
 
   describe('.derivers', function() {
     describe('.dateFormat()', function() {
-      const df = utils.derivers.dateFormat(
+      const df = derivers.dateFormat(
         'x',
         'abc % %% %%% %a %y %m %n %d %w %x %H %M %S',
         true
@@ -362,7 +364,7 @@ describe('  utils', function() {
     });
 
     describe('.bin()', function() {
-      const binner = utils.derivers.bin('x', 10);
+      const binner = derivers.bin('x', 10);
 
       it('bins numbers', function() {
         expect(binner({x: 11})).toBe(10);
