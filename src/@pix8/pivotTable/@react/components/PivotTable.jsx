@@ -30,7 +30,7 @@ PivotTable.defaultProps = {
   ...PivotData.defaultProps,
   rendererName: 'Table',
   // renderers: {...TableRenderers, ...TSVRenderers, ...FoobarRenderers},
-  renderers: {...FoobarRenderers},
+  renderers: { ...TableRenderers, ...FoobarRenderers},
 }
 
 export default PivotTable

@@ -94,36 +94,40 @@ export default function PivotTableUI(props) {
     const results = {}
     let recordsProcessedTally = 0
 
-    PivotData.forEachRecord(props.data, props.derivedAttributes, (record) => {
-      // examine every key of every record
-      for (const attr of Object.keys(record)) {
+    PivotData.forEachRecord(
+      props.data,
+      props.derivedAttributes,
+      (record) => {
+        // examine every key of every record
+        for (const attr of Object.keys(record)) {
 
-        // if key doesn't exist yet
-        if (!(attr in results)) {
-          // add the key to our dictionary
-          results[attr] = {}
+          // if key doesn't exist yet
+          if (!(attr in results)) {
+            // add the key to our dictionary
+            results[attr] = {}
 
-          if (recordsProcessedTally > 0) {
-            results[attr].null = recordsProcessedTally
+            if (recordsProcessedTally > 0) {
+              results[attr].null = recordsProcessedTally
+            }
           }
         }
-      }
 
-      // for every key that exists on results
-      for (const attr in results) {
-        const value = attr in record ? record[attr] : 'null'
+        // for every key that exists on results
+        for (const attr in results) {
+          const value = attr in record ? record[attr] : 'null'
 
-        // if there isn't a value already assigned. zero the figure.
-        if (!(value in results[attr])) {
-          results[attr][value] = 0
+          // if there isn't a value already assigned. zero the figure.
+          if (!(value in results[attr])) {
+            results[attr][value] = 0
+          }
+
+          // increment the occurance count/tally
+          results[attr][value]++
         }
 
-        // increment the occurance count/tally
-        results[attr][value]++
+        recordsProcessedTally++
       }
-
-      recordsProcessedTally++
-    })
+    )
 
     return results
   }

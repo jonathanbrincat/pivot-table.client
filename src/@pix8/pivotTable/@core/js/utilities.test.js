@@ -1,6 +1,8 @@
-import * as utils from '../utilities';
-import { derivers } from '../locales/en';
-import PivotData from '../PivotData';
+import { expect, it, test, describe } from 'vitest'
+import * as utils from './utilities'
+import { derivers } from './locales/en'
+import PivotData from '../../@react/js/PivotData'
+// import { sum } from './sum'
 /* eslint-disable no-magic-numbers */
 
 /*
@@ -16,7 +18,20 @@ const fixtureData = [
   ['Jane', 'female', 'red', '1982-11-08', 95, 25],
   ['John', 'male', 'blue', '1982-12-08', 112, 30],
   ['Carol', 'female', 'yellow', '1983-12-08', 102, 14],
-];
+]
+
+// test('adds 1 + 2 to equal 3', () => {
+//   expect(sum(1, 2)).toBe(3)
+// })
+
+// describe('with no options', () => {
+//   const aoaInput = [['a', 'b'], [1, 2], [3, 4]]
+//   const pd = new PivotData({ data: aoaInput })
+
+//   it('has the correct grand total value', ({ expect }) => {
+//     expect(pd.getAggregator([], []).value()).toBe(2)
+//   })
+// })
 
 describe('  utils', function() {
   describe('.PivotData()', function() {
@@ -383,4 +398,4 @@ describe('  utils', function() {
       it("doesn't bin objects", () => expect(binner({x: {a: 1}})).toBeNaN());
     });
   });
-});
+})

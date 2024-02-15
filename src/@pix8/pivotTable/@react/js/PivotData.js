@@ -27,17 +27,19 @@ export default class PivotData {
     this.sorted = false
 
     // iterate through input, accumulating data for cells
-    PivotData.forEachRecord(
+    const wtf = PivotData.forEachRecord(
       this.props.data,
       this.props.derivedAttributes,
       record => {
         if (this.filter(record)) {
-          this.processRecord(record);
+          this.processRecord(record)
         }
       }
     )
+    console.log('wtf :1: ', wtf)
   }
 
+  // JB: doesn't get used besides testing
   forEachMatchingRecord(criteria, callback) {
     return PivotData.forEachRecord(
       this.props.data,
@@ -132,9 +134,10 @@ export default class PivotData {
     return this.rowKeys
   }
 
+  // JB: this parses to reshape the data
   processRecord(record) {
     // this code is called in a tight loop
-    const colKey = [];
+    const colKey = []
     const rowKey = []
 
     for (const x of Array.from(this.props.cols)) {
@@ -212,58 +215,77 @@ export default class PivotData {
   }
 }
 
+// JB: doesn't appear to serve any purpose. the returns are unused and appear to return the same array collection of undefined. and only appears to get retrieved for testing
+// JB: the reference to jQuery is irrelevant
+// going to have to explore clean unmodified version - use example from repo
+
 // can handle arrays or jQuery selections of tables
 PivotData.forEachRecord = function(input, derivedAttributes, f) {
+  return 'fuck'
+  /*
   let addRecord, record
 
   if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
-    addRecord = f;
-  } else {
+    addRecord = f
+  }
+  else {
     addRecord = function(record) {
       for (const k in derivedAttributes) {
         const derived = derivedAttributes[k](record)
+
         if (derived !== null) {
           record[k] = derived
         }
       }
-      return f(record);
-    };
+
+      return f(record)
+    }
   }
 
   // if it's a function, have it call us back
   if (typeof input === 'function') {
     return input(addRecord)
-  } else if (Array.isArray(input)) {
+  }
+  else if (Array.isArray(input)) {
+
+    // Array of arrays
     if (Array.isArray(input[0])) {
-      // array of arrays
-      return (() => {
-        const result = []
-        for (const i of Object.keys(input || {})) {
-          const compactRecord = input[i]
-          if (i > 0) {
-            record = {}
-            for (const j of Object.keys(input[0] || {})) {
-              const k = input[0][j]
-              record[k] = compactRecord[j]
+      return (
+        () => {
+          const result = []
+          for (const i of Object.keys(input || {})) {
+            const compactRecord = input[i]
+
+            if (i > 0) {
+              record = {}
+              for (const j of Object.keys(input[0] || {})) {
+                const k = input[0][j]
+                record[k] = compactRecord[j]
+              }
+              result.push(addRecord(record))
             }
-            result.push(addRecord(record))
           }
+
+          return result
         }
-        return result
-      })()
+      )()
     }
 
-    // array of objects
-    return (() => {
-      const result1 = [];
-      for (record of Array.from(input)) {
-        result1.push(addRecord(record))
+    // Array of objects
+    return (
+      () => {
+        const result1 = []
+
+        for (record of Array.from(input)) {
+          result1.push(addRecord(record))
+        }
+        return result1
       }
-      return result1;
-    })()
+    )()
   }
 
   throw new Error('unknown input format')
+  */
 }
 
 // JB: convert to TypeScript should remove these dependencies on making proptypes declarations with defaults
