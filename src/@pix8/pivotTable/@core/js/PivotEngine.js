@@ -1,96 +1,120 @@
+import { aggregators } from '../../@core/js/aggregators'
+
 export default class PivotEngine {
   constructor(props = {}) {
     // console.log('pivot engine :: ', props)
 
     this.props = Object.assign({}, PivotEngine.defaultProps, props)
-    this.foo = 'hello'
+    
+    this.tree = {}
+    this.rowKeys = []
+    this.colKeys = []
+    this.rowTotals = {}
+    this.colTotals = {}
+    this.allTotal = this.aggregator(this, [], [])
 
     PivotEngine.forEachRecord(
       this.props.data,
       this.props.derivedAttributes,
       (record) => {
         // console.log(record)
-        // if (this.filter(record)) {
-        //   this.processRecord(record);
-        // }
+        if (this.filter(record)) {
+          this.processRecord(record)
+        }
       }
     )
   }
 
-  // filter(record) {
-  //   for (const k in this.props.valueFilter) {
-  //     if (record[k] in this.props.valueFilter[k]) {
-  //       return false
-  //     }
-  //   }
-  //   return true
-  // }
+  filter(record) {
+    for (const k in this.props.valueFilter) {
+      if (record[k] in this.props.valueFilter[k]) {
+        return false
+      }
+    }
+    return true
+  }
+
+  // JB: this parses to reshape the data
+  processRecord(record) {
+    // this code is called in a tight loop
+    const colKey = []
+    const rowKey = []
+
+    for (const x of Array.from(this.props.cols)) {
+      colKey.push(x in record ? record[x] : 'null')
+    }
+
+    for (const x of Array.from(this.props.rows)) {
+      rowKey.push(x in record ? record[x] : 'null')
+    }
+
+    const flatRowKey = rowKey.join(String.fromCharCode(0))
+    const flatColKey = colKey.join(String.fromCharCode(0))
+
+    this.allTotal.push(record)
+
+    if (rowKey.length !== 0) {
+      if (!this.rowTotals[flatRowKey]) {
+        this.rowKeys.push(rowKey);
+        this.rowTotals[flatRowKey] = this.aggregator(this, rowKey, [])
+      }
+      this.rowTotals[flatRowKey].push(record)
+    }
+
+    if (colKey.length !== 0) {
+      if (!this.colTotals[flatColKey]) {
+        this.colKeys.push(colKey);
+        this.colTotals[flatColKey] = this.aggregator(this, [], colKey)
+      }
+
+      this.colTotals[flatColKey].push(record)
+    }
+
+    if (colKey.length !== 0 && rowKey.length !== 0) {
+      if (!this.tree[flatRowKey]) {
+        this.tree[flatRowKey] = {}
+      }
+
+      if (!this.tree[flatRowKey][flatColKey]) {
+        this.tree[flatRowKey][flatColKey] = this.aggregator(
+          this,
+          rowKey,
+          colKey
+        )
+      }
+
+      this.tree[flatRowKey][flatColKey].push(record)
+    }
+  }
 }
 
 // JB: should make this static method the engine
 // can handle arrays or jQuery selections of tables
-PivotEngine.forEachRecord = function (input, derivedAttributes, func) {
+PivotEngine.forEachRecord = function (input, derivedAttributes, callback) {
   // console.log(input, derivedAttributes)
   
-  let addRecord, record
-
-  if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
-    addRecord = func
-  }
-  else {
-    addRecord = function(record) {
-      for (const k in derivedAttributes) {
-        const derived = derivedAttributes[k](record)
-        if (derived !== null) {
-          record[k] = derived
-        }
-      }
-
-      return func(record)
-    }
-  }
-
-  // if it's a function, have it call us back
-  if (typeof input === 'function') {
-    return input(addRecord)
-  }
-  else if (Array.isArray(input)) {
+  if (Array.isArray(input)) {
     
     // Array of arrays
     if (Array.isArray(input[0])) {
       return (
         () => {
-          const result = []
-
           for (const i of Object.keys(input || {})) {
             const compactRecord = input[i]
+
             if (i > 0) {
-              record = {}
+              const record = {}
               for (const j of Object.keys(input[0] || {})) {
                 const k = input[0][j]
                 record[k] = compactRecord[j]
               }
-              result.push(addRecord(record))
+
+              callback(record)
             }
           }
-
-          return result
         }
-      )()
+      )() // JB: why the self-executing function?
     }
-
-    // Array of objects
-    return (
-      () => {
-        const result1 = []
-
-        for (record of Array.from(input)) {
-          result1.push(addRecord(record))
-        }
-
-        return result1
-      }
-    )()
   }
 
   throw new Error('Unknown input format can not process the data collection')

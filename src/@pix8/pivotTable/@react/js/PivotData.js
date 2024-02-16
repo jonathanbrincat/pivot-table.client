@@ -24,19 +24,23 @@ export default class PivotData {
     this.rowTotals = {}
     this.colTotals = {}
     this.allTotal = this.aggregator(this, [], [])
+    
     this.sorted = false
 
     // iterate through input, accumulating data for cells
     const wtf = PivotData.forEachRecord(
       this.props.data,
       this.props.derivedAttributes,
-      record => {
+      (record) => {
+        // JB: if record does not need to be filtered; seems inefficient to do this with the .csv data as lots of duplication.
+        // JB: than parse the record => processRecord() to pivottable flavour
+        // I would of thought this would be done post massaging into another shape/schema
         if (this.filter(record)) {
           this.processRecord(record)
         }
       }
     )
-    console.log('wtf :1: ', wtf)
+    // console.log('wtf :1: ', wtf)
   }
 
   // JB: doesn't get used besides testing
@@ -60,6 +64,7 @@ export default class PivotData {
     )
   }
 
+  // JB: remove record if it needs to be filtered/ommitted. Rather than looping I would have thought .includes() would be more performant
   filter(record) {
     for (const k in this.props.valueFilter) {
       if (record[k] in this.props.valueFilter[k]) {
@@ -218,17 +223,19 @@ export default class PivotData {
 // JB: doesn't appear to serve any purpose. the returns are unused and appear to return the same array collection of undefined. and only appears to get retrieved for testing
 // JB: the reference to jQuery is irrelevant
 // going to have to explore clean unmodified version - use example from repo
+// update: tested with original repo. output is the same. returns appear unused. behavouir appears identical
+// commenting out the result and result1 array push will break it, so they be getting used
 
 // can handle arrays or jQuery selections of tables
 PivotData.forEachRecord = function(input, derivedAttributes, f) {
-  return 'fuck'
-  /*
   let addRecord, record
 
   if (Object.getOwnPropertyNames(derivedAttributes).length === 0) {
+    // console.log('route A') // taking this route
     addRecord = f
   }
   else {
+    // console.log('route B')
     addRecord = function(record) {
       for (const k in derivedAttributes) {
         const derived = derivedAttributes[k](record)
@@ -244,12 +251,15 @@ PivotData.forEachRecord = function(input, derivedAttributes, f) {
 
   // if it's a function, have it call us back
   if (typeof input === 'function') {
+    // console.log('route FUNCTION')
     return input(addRecord)
   }
   else if (Array.isArray(input)) {
 
     // Array of arrays
     if (Array.isArray(input[0])) {
+      // console.log('route ARRAY OF ARRAYS')  // taking this route
+      
       return (
         () => {
           const result = []
@@ -258,13 +268,28 @@ PivotData.forEachRecord = function(input, derivedAttributes, f) {
 
             if (i > 0) {
               record = {}
+
               for (const j of Object.keys(input[0] || {})) {
                 const k = input[0][j]
                 record[k] = compactRecord[j]
               }
+
+              console.log('=> ', record)
+
               result.push(addRecord(record))
+
+              // JB: this is weird; will cause a memory leak. get stuck in an infinite loop cycling through the records
+              // there's some sketchy coding going on somewhere
+              // JB: update. okay it's the addRecord() => callback that is orchectrating the action; the rest is just some garbage that so happens to be looping
+              // its the callback passed into forEachRecord that makes the magic happen
+              // const test = addRecord(record)
+              // console.log(test)
+              // result.push(test)
+
             }
           }
+
+          // console.log('jb >> ', result)
 
           return result
         }
@@ -272,6 +297,7 @@ PivotData.forEachRecord = function(input, derivedAttributes, f) {
     }
 
     // Array of objects
+    // console.log('route ARRAY OF OBJECTS')
     return (
       () => {
         const result1 = []
@@ -285,7 +311,6 @@ PivotData.forEachRecord = function(input, derivedAttributes, f) {
   }
 
   throw new Error('unknown input format')
-  */
 }
 
 // JB: convert to TypeScript should remove these dependencies on making proptypes declarations with defaults

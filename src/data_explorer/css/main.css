@@ -1,4 +1,5 @@
 @import "bootstrap";
+@import "tailwind.css";
 @import "demo-supplement.css";
 @import "sbx-vars.css";
 @import "pivot-table.css";
