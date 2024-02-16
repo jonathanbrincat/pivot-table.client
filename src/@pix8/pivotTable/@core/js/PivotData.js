@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
-import { aggregators } from '../../@core/js/aggregators'
-import { getSort, naturalSort } from '../../@core/js/utilities'
+import { aggregators } from './aggregators'
+import { getSort, naturalSort } from './utilities'
 
 export default class PivotData {
   constructor(inputProps = {}) {

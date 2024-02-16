@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import PivotData from '../../js/PivotData'
+import PivotData from '../../../@core/js/PivotData'
 
 /* eslint-disable react/prop-types */
 // eslint can't see inherited propTypes!
@@ -100,7 +100,7 @@ function makeRenderer(
   return Renderer;
 }
 
-export default function createChartjsRenderers(config) {
+export default function createChartjsRenderer(config) {
   return {
     'Chartjs': makeRenderer(config, true),
   }

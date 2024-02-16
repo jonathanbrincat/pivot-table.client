@@ -1,9 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import PivotData from '../../js/PivotData'
-import { redColorScaleGenerator } from '../../../@core/js/utilities'
+import PivotData from '../../../@core/js/PivotData'
+import { redColorScaleGenerator, spanSize } from '../../../@core/js/ui'
 
-import './tableRenderers.css'
+import './tableRenderer.css'
 
 const STATICS = {
   heatmapMode: {
@@ -11,52 +11,6 @@ const STATICS = {
     column: 'col',
     row: 'row',
   }
-}
-
-// helper function for setting row/col-span in pivotTableRenderer
-function spanSize(arr, i, j) {
-  let x
-
-  if (i !== 0) {
-    let asc, end
-    let noDraw = true
-
-    for (
-      x = 0, end = j, asc = end >= 0;
-      asc ? x <= end : x >= end;
-      asc ? x++ : x--
-    ) {
-      if (arr[i - 1][x] !== arr[i][x]) {
-        noDraw = false
-      }
-    }
-    if (noDraw) {
-      return -1
-    }
-  }
-
-  let len = 0
-
-  while (i + len < arr.length) {
-    let asc1, end1
-    let stop = false
-
-    for (
-      x = 0, end1 = j, asc1 = end1 >= 0;
-      asc1 ? x <= end1 : x >= end1;
-      asc1 ? x++ : x--
-    ) {
-      if (arr[i][x] !== arr[i + len][x]) {
-        stop = true
-      }
-    }
-    if (stop) {
-      break
-    }
-    len++
-  }
-
-  return len
 }
 
 function makeRenderer(

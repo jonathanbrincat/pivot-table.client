@@ -1,5 +1,5 @@
 import React from 'react'
-import PivotData from '../../js/PivotData'
+import PivotData from '../../../@core/js/PivotData'
 
 class TSVExportRenderer extends React.PureComponent {
   render() {

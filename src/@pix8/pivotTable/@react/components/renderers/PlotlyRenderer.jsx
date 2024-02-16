@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import PivotData from '../../js/PivotData'
+import PivotData from '../../../@core/js/PivotData'
 
 /* eslint-disable react/prop-types */
 // eslint can't see inherited propTypes!
@@ -210,7 +210,7 @@ function makeScatterRenderer(PlotlyComponent) {
   return Renderer;
 }
 
-export default function createPlotlyRenderers(PlotlyComponent) {
+export default function createPlotlyRenderer(PlotlyComponent) {
   return {
     'Grouped Column Chart': makeRenderer(
       PlotlyComponent,

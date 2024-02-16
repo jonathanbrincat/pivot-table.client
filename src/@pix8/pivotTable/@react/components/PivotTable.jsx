@@ -1,9 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import PivotData from '../js/PivotData'
-import TableRenderers from './renderers/TableRenderers'
-import TSVRenderers from './renderers/TSVRenderers'
-import FoobarRenderers from './renderers/FoobarRenderers'
+import PivotData from '../../@core/js/PivotData'
+import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer } from './renderers'
 
 /* eslint-disable react/prop-types */
 // eslint can't see inherited propTypes!
@@ -29,8 +27,8 @@ PivotTable.propTypes = {
 PivotTable.defaultProps = {
   ...PivotData.defaultProps,
   rendererName: 'Table',
-  // renderers: {...TableRenderers, ...TSVRenderers, ...FoobarRenderers},
-  renderers: { ...TableRenderers, ...FoobarRenderers},
+  // renderers: {...TableRenderer, ...TSVRenderer, ...FoobarRenderer},
+  renderers: { ...TableRenderer, ...FoobarRenderer, ...TestRenderer },
 }
 
 export default PivotTable

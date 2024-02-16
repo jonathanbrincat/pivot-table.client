@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { ReactSortable } from 'react-sortablejs'
 import Dimension from './components/Dimension'
 import PivotTable from './components/PivotTable'
-import PivotData from './js/PivotData'
+import PivotData from '../@core/js/PivotData'
 import { sortAs, getSort } from '../@core/js/utilities'
 import { sortBy } from '../@core/js/constants'
 

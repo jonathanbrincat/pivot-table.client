@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import PivotTableUI from '../@pix8/pivotTable/@react'
-import TableRenderers from '../@pix8/pivotTable/@react/components/renderers/TableRenderers'
-import TSVRenderers from '../@pix8/pivotTable/@react/components/renderers/TSVRenderers'
-import createChartjsRenderers from '../@pix8/pivotTable/@react/components/renderers/ChartjsRenderers'
+import {TableRenderer, TSVRenderer, createChartjsRenderer}  from '../@pix8/pivotTable/@react/components/renderers'
 import { getData } from './js/services/dataService'
-import { aggregators, aggregatorTemplates } from '../@pix8/pivotTable/@core/js/aggregators'
-import { isEmptyObject } from './js/utility'
+import {aggregators, aggregatorTemplates }  from '../@pix8/pivotTable/@core/js/aggregators'
+import {isEmptyObject}  from './js/utility'
 import STATIC, { colors as palette  } from './js/constants'
 
 import './app.css'
@@ -52,9 +50,9 @@ export default function App({...props}) {
       <PivotTableUI
         data={dataset} // REQUIRED - everything else is optional
         // renderers={{
-        // 	...TableRenderers,
-		// 	...TSVRenderers,
-        // 	...createChartjsRenderers({ palette }),
+        // 	...TableRenderer,
+		// 	...TSVRenderer,
+        // 	...createChartjsRenderer({ palette }),
         // }}
         // aggregators={{
         // 	...aggregators,
