@@ -1,11 +1,13 @@
 # Pix8 Data Explorer
-Copyright 2024 by pix8 Ltd. All rights reserved. No license granted. This is not free or open-source software. 
+Copyright 2025 by pix8 Ltd. All rights reserved. No license granted. This is not free or open-source software. 
 
-Built upon the React + Vite boilerplate. Dec. 2023.
+React and Vue Pivot Table (Staged in Vite Dec 2025.)
 
-This is a prototype piece for the Streetbees Copilot Dashboard exploring and proofing an approach to produce tooling to probe and relay the surveyed data to the user for deeper examination and assist with the discovery of insights.
+Founded upon [PivotTable.js](https://github.com/nicolaskruchten/pivottable), it was forked, fixed, modernised and in tandem with the React port of this library by the same author [react-pivottable](https://github.com/plotly/react-pivottable).
 
-It has been built in React to facilitate fluid conversion of ideas into working concepts that can be reviewed and evolved into a refined product and to leverage the rich JavaScript ecosystem.
+With the overhaul came a divorce from the original codebase, which still serves as inspirations and deserves to be credited.
+
+A Vue port has since been added.
 
 Setup
 ```
