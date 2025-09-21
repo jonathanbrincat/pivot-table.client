@@ -12,7 +12,22 @@ import './index.css'
 /* eslint-disable react/prop-types */
 // eslint can't see inherited propTypes!
 
+// export default function PivotTableUI({
+//   // ...PivotTable.defaultProps,
+//   hiddenAttributes = [],
+//   hiddenFromAggregators = [],
+//   hiddenFromDragDrop = [],
+//   menuLimit = 500,
+//   rows = [],
+//   cols = [],
+//   ...props
+// }) {
 export default function PivotTableUI(props) {
+  // props = {
+  //   ...PivotTable.defaultProps,  // Merge PivotTable's defaultProps
+  //   ...props,                    // Overwrite with any incoming props
+  // }
+
   const [dimensions, setDimensions] = useState({})
 
   const [axisX, setAxisX] = useState(props.cols ?? [])
@@ -72,6 +87,8 @@ export default function PivotTableUI(props) {
   }, [dimensions, props.rows, props.cols, props.hiddenAttributes, props.hiddenFromDragDrop])
 
   useEffect(() => {
+    // console.log('React :dimensions: ', dimensions)
+
     setCriterion(
       Object.keys(dimensions)
         .map((item, index) => ({ id: `dimension-${++index}`, name: item }))
@@ -88,7 +105,9 @@ export default function PivotTableUI(props) {
         })
         .toSorted(sortAs([]))
     )
-  }, [axisX, axisY])
+
+    // console.log('React :criterion: ', criterion)
+  }, [axisX, axisY, dimensions])
 
   function parseDimensions() {
     const results = {}
@@ -235,7 +254,7 @@ export default function PivotTableUI(props) {
             {
               Object.keys(props.renderers).map(
                 (item, index) => (
-                  <option value={item} key={index}>{item}</option>
+                  <option value={item} key={`renderer-${index}`}>{item}</option>
                 )
               )
             }
@@ -388,18 +407,27 @@ export default function PivotTableUI(props) {
   )
 }
 
-PivotTableUI.propTypes = Object.assign({}, PivotTable.propTypes, {
-  hiddenAttributes: PropTypes.arrayOf(PropTypes.string),
-  hiddenFromAggregators: PropTypes.arrayOf(PropTypes.string),
-  hiddenFromDragDrop: PropTypes.arrayOf(PropTypes.string),
-  menuLimit: PropTypes.number,
-})
+PivotTableUI.propTypes = Object.assign(
+  {},
+  PivotTable.propTypes,
+  {
+    hiddenAttributes: PropTypes.arrayOf(PropTypes.string),
+    hiddenFromAggregators: PropTypes.arrayOf(PropTypes.string),
+    hiddenFromDragDrop: PropTypes.arrayOf(PropTypes.string),
+    menuLimit: PropTypes.number,
+  }
+)
 
-PivotTableUI.defaultProps = Object.assign({}, PivotTable.defaultProps, {
-  hiddenAttributes: [],
-  hiddenFromAggregators: [],
-  hiddenFromDragDrop: [],
-  menuLimit: 500,
-  rows: [],
-  cols: [],
-})
+// JB: defaultProps to be deprecated in React
+PivotTableUI.defaultProps = Object.assign(
+  {},
+  PivotTable.defaultProps,
+  {
+    hiddenAttributes: [],
+    hiddenFromAggregators: [],
+    hiddenFromDragDrop: [],
+    menuLimit: 500,
+    rows: [],
+    cols: [],
+  }
+)

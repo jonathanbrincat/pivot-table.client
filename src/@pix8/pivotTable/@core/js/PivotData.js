@@ -274,7 +274,7 @@ PivotData.forEachRecord = function(input, derivedAttributes, f) {
                 record[k] = compactRecord[j]
               }
 
-              console.log('=> ', record)
+              // console.log('=> ', record)
 
               result.push(addRecord(record))
 

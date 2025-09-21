@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import PivotTableUI from '../@pix8/pivotTable/@react'
-import {TableRenderer, TSVRenderer, createChartjsRenderer}  from '../@pix8/pivotTable/@react/components/renderers'
-import { getData } from './js/services/dataService'
-import {aggregators, aggregatorTemplates }  from '../@pix8/pivotTable/@core/js/aggregators'
-import {isEmptyObject}  from './js/utility'
-import STATIC, { colors as palette  } from './js/constants'
+import PivotTableUI from '../../@pix8/pivotTable/@react'
+import {TableRenderer, TSVRenderer, createChartjsRenderer}  from '../../@pix8/pivotTable/@react/components/renderers'
+import { getData } from '../js/services/dataService'
+import {aggregators, aggregatorTemplates }  from '../../@pix8/pivotTable/@core/js/aggregators'
+import {isEmptyObject}  from '../js/utility'
+import STATIC, { colors as palette  } from '../js/constants'
 
 import './app.css'
 
@@ -14,8 +14,11 @@ const options = {
 	unusedOrientationCutoff: Infinity,
 }
 
-export default function App({...props}) {
-	const { uid, taxonomy: { questions, key_variables } } = props
+export default function App({
+	uid = '',
+	taxonomy = { questions:[], key_variables: [] }
+}) {
+	// const { uid, taxonomy: { questions, key_variables } } = props
 
 	const [dataset, setDataset] = useState([])
 
@@ -82,9 +85,4 @@ export default function App({...props}) {
 App.propTypes = {
 	uid: PropTypes.string.isRequired,
 	taxonomy: PropTypes.objectOf(PropTypes.array),
-}
-
-App.defaultProps = {
-	uid: '',
-	taxonomy: { questions:[], key_variables: [] },
 }

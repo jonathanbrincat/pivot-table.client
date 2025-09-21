@@ -9,7 +9,8 @@ function makeRenderer(
   config = {}
 ) {
   const FoobarRenderer = (props) => {
-    const pivotData = new PivotData(props)
+    // const pivotData = new PivotData(props)
+    const pivotData = new PivotData({ ...PivotData.defaultProps, ...props })
     // const pivotEngine = new PivotEngine(props)
 
     const rowKeys = pivotData.getRowKeys()
@@ -132,9 +133,10 @@ function makeRenderer(
     ...PivotData.propTypes,
   }
   
-  FoobarRenderer.defaultProps = {
-    ...PivotData.defaultProps,
-  }
+  // JB: defaultProps to be deprecated in React
+  // FoobarRenderer.defaultProps = {
+  //   ...PivotData.defaultProps,
+  // }
 
   return FoobarRenderer
 }

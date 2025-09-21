@@ -90,14 +90,14 @@ function makeRenderer(
               const filters = {}
 
               for (const i of Object.keys(colAttrs || {})) {
-                const attr = colAttrs[i];
+                const attr = colAttrs[i]
                 if (colValues[i] !== null) {
                   filters[attr] = colValues[i]
                 }
               }
 
               for (const i of Object.keys(rowAttrs || {})) {
-                const attr = rowAttrs[i];
+                const attr = rowAttrs[i]
                 if (rowValues[i] !== null) {
                   filters[attr] = rowValues[i]
                 }
@@ -109,7 +109,7 @@ function makeRenderer(
                   value,
                   filters,
                   pivotData
-                );
+                )
             }
           : null
 

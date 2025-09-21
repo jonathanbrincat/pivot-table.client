@@ -6,7 +6,11 @@ import './dimension.css'
 /* eslint-disable react/prop-types */
 // eslint can't see inherited propTypes!
 
-export default function Dimension(props) {
+export default function Dimension(props = {
+  attrValues: {},
+  valueFilter: {},
+  isIndeterminate: false,
+}) {
   const [isOpen, setIsOpen] = useState(false)
   const [filterText, setFilterText] = useState('')
   const [isAllFilters, setIsAllFilters] = useState(true)
@@ -137,11 +141,12 @@ export default function Dimension(props) {
   )
 }
 
-Dimension.defaultProps = {
-  attrValues: {},
-  valueFilter: {},
-  isIndeterminate: false,
-}
+// JB: defaultProps to be deprecated in React
+// Dimension.defaultProps = {
+//   attrValues: {},
+//   valueFilter: {},
+//   isIndeterminate: false,
+// }
 
 Dimension.propTypes = {
   // name: PropTypes.string.isRequired, // cc. BUG line. 181 index.js - empty dimensions for axis

@@ -1,0 +1,6 @@
+export { default as TableRenderer } from './TableRenderer.vue'
+export { default as TSVRenderer } from './TSVRenderer.vue'
+export { default as createPlotlyRenderer } from './PlotlyRenderer.vue'
+export { default as createChartjsRenderer } from './ChartjsRenderer.vue'
+export { default as FoobarRenderer } from './FoobarRenderer.vue'
+export { default as TestRenderer } from './TestRenderer.vue'

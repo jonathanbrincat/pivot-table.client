@@ -1,6 +1,6 @@
 import { useLoaderData } from 'react-router-dom'
 import App from '../../App'
-import { getTaxonomy } from '../../js/services/dataService'
+import { getTaxonomy } from '../../../js/services/dataService'
 
 export async function loader({ params }) {
 	const preflight = await getTaxonomy(params.projectId)
