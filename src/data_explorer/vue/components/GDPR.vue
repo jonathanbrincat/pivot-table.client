@@ -1,5 +1,0 @@
-<template>
-  <p class="text-[10px] text-neutral-400 italic mt-4">GDPR Privacy Notice:</p>
-  <p class="text-[10px] text-neutral-400 italic mb-4">This document contains personal data provided soley for job consideration and should be treated as read-only. Any Storage, distribution, or data capture without consent is prohibited under UK GDPR. Consent is granted upon formal engagement and withdrawn once the engagement ceases. If no contact is made within 48 hours of release, any implied right is void and automatically revoked. Engagement under false pretenses is not grounds for legitimate interest and no record should be maintained whatsoever. All personal information remains the property of the individual and must be destroyed immediately after use or withdrawal. #5732900a74b82acce1d34366b275d322</p>
-  <!-- <p class="text-[10px]">Read-only. Destroy after use. Not for storage or distribution. All personal information remains the property of the author. Data capture is strictly prohibited under UK GDPR.</p> -->
-</template>

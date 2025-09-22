@@ -9,6 +9,47 @@ With the overhaul came a divorce from the original codebase, which still serves 
 
 A Vue port has since been added.
 
+```
+repo.client/
+├── src/
+│   ├── index.jsx
+│   ├── data_explorer
+│   │   ├── css/
+│   │   ├── js/
+│   │   ├── react/
+│   |   |   ├── components/
+│   |   |   ├── hooks/
+│   |   |   ├── router/
+│   |   |   ├── views/
+│   |   |   ├── app.css
+│   |   |   └── App.jsx
+│   │   └── vue/
+│   |       ├── components/
+│   |       ├── router/
+│   |       ├── views/
+│   |       ├── app.css
+│   |       └── App.vue
+│   └── @pix8/
+│       └── pivotTable/
+│           ├── @core/
+│           ├── @react/
+│           |   ├── components/
+│           |   ├── js/
+│           |   ├── index.css
+│           |   └── index.jsx
+│           └── @vue/
+│               ├── components/
+│               ├── js/
+│               ├── index.css
+│               └── index.jsx
+├── public/
+│   ├── assets/
+│   └── favicon/
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
 Setup
 ```
 yarn install --immutable --immutable-cache

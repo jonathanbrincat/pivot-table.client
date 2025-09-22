@@ -4,10 +4,11 @@ import PivotTableUI from '../../../packages/@vue'
 import { getData } from '../../../common/js/services/dataService'
 import STATIC, { colors as palette  } from '../../../common/js/constants'
 
-const options = {
-	aggregatorName: STATIC.AGGREGATOR.uniqueCountOfGrandTotal,
-	unusedOrientationCutoff: Infinity,
-}
+// JB: do i still need these? aggregatorName doesn't even get touched and gets overridden
+// const options = {
+// 	aggregatorName: STATIC.AGGREGATOR.uniqueCountOfGrandTotal,
+// 	unusedOrientationCutoff: Infinity,
+// }
 
 const props = defineProps(
   {
@@ -43,8 +44,8 @@ onMounted(async () => {
       :cols="['Age', 'Gender']"
       :rows="['What brands of treats and toys do you usually buy for your pet']"
       :rendererName="activeRenderer"
-      v-bind="options"
     />
+    <!-- v-bind="options" -->
   </section>
 </template>
 
