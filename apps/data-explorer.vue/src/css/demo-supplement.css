@@ -1,0 +1,40 @@
+.react-router--loading {
+  opacity: 0.25;
+  transition: opacity 200ms;
+  transition-delay: 200ms;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#null {
+  text-align: center;
+  color: var(--gray-500);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+#null:before {
+  content: url('/assets/images/bee_avatar.svg');
+  transform: scale(2);
+  filter: grayscale(100%) opacity(25%);
+  display: block;
+}
+
+#error-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
