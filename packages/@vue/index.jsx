@@ -66,7 +66,7 @@ export default defineComponent({
       },
       renderers: {
         type: Object,
-        default: () => ({ TableRenderer, FoobarRenderer, TestRenderer }),
+        default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer }),
       },
 
       hiddenAttributes: {

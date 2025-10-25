@@ -52,15 +52,9 @@ const props = defineProps(
     rendererName: {
       type: String,
     },
-    // renderers: {...TableRenderer, ...TSVRenderer, ...FoobarRenderer},
-    // renderers: { ...TableRenderer, ...FoobarRenderer, ...TestRenderer },
     renderers: {
       type: Object,
-      default: () => ({
-        Table: TableRenderer,
-        Foobar: FoobarRenderer,
-        Test: TestRenderer
-      })
+      default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer, })
     },
   }
 )

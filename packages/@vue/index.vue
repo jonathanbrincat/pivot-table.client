@@ -62,7 +62,7 @@ const props = defineProps(
     },
     renderers: {
       type: Object,
-      default: () => ({ TableRenderer, FoobarRenderer, TestRenderer }),
+      default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer }),
     },
 
     hiddenAttributes: {
@@ -91,18 +91,6 @@ const props = defineProps(
     },
   }
 )
-
-const list1 = ref([
-  { name: "John", id: 1 },
-  { name: "Joao", id: 2 },
-  { name: "Jean", id: 3 },
-  { name: "Gerard", id: 4 },
-  { name: "Juan", id: 5 },
-  { name: "Edgard", id: 6 },
-  { name: "Johnson", id: 7 }
-])
-const list2 = ref([])
-const list3 = ref([])
 
 const dimensions = ref({})
 
@@ -505,65 +493,6 @@ function createCluster(items, onSortableChangeHandler) {}
     <h3>Dimensions</h3>
     <pre class="text-xs" style="font-size: 9px;">{{ JSON.stringify(dimensions, null, 2) }}</pre>
   </div> -->
-
-    <!-- <div class="flex flex-row gap-4 mb-4">
-      <div class="">
-        <h3>Dimension</h3>
-        <draggable
-          class="list-group"
-          :list="list1"
-          group="people"
-          itemKey="name"
-        >
-          <template #item="{ element, index }">
-            <div class="list-group-item">{{ element.name }} {{ index }}</div>
-          </template>
-        </draggable>
-      </div>
-
-      <div class="">
-        <h3>Axis X</h3>
-        <draggable
-          class="list-group"
-          :list="list2"
-          group="people"
-          itemKey="name"
-        >
-          <template #item="{ element, index }">
-            <div class="list-group-item">{{ element.name }} {{ index }}</div>
-          </template>
-        </draggable>
-      </div>
-
-      <div class="">
-        <h3>Axis Y</h3>
-        <draggable
-          class="list-group"
-          :list="list3"
-          group="people"
-          itemKey="name"
-        >
-          <template #item="{ element, index }">
-            <div class="list-group-item">{{ element.name }} {{ index }}</div>
-          </template>
-        </draggable>
-      </div>
-
-      <div>
-        <h3>Dimension</h3>
-        <pre>{{ JSON.stringify(list1, null, 2) }}</pre>
-      </div>
-
-      <div>
-        <h3>Axis X</h3>
-        <pre>{{ JSON.stringify(list2, null, 2) }}</pre>
-      </div>
-
-      <div>
-        <h3>Axis Y</h3>
-        <pre>{{ JSON.stringify(list3, null, 2) }}</pre>
-      </div>
-    </div> -->
 </template>
 
 <style>

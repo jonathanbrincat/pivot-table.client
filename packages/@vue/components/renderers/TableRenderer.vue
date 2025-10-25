@@ -36,31 +36,31 @@ const props = defineProps({
   data: Array,
 })
 
+/*
 // JB: ISSUE: computed not working as expected and recognising the reactivity of props.data
-// const pivotData = computed(() => {
-//   console.log('JB :data ready?: ', props.data) // JB: data not loaded at th point and no reactivity
-//   return new PivotData(props)
-// })
+const pivotData = computed(() => {
+  console.log('JB :data ready?: ', props.data) // JB: data not loaded at th point and no reactivity
+  return new PivotData(props)
+})
 
-// console.log('JB :: ', pivotData.value)
+const rowKeys = pivotData.value.getRowKeys()
+const colKeys = pivotData.value.getColKeys()
+const rowAttrs = pivotData.value.props.rows
+const colAttrs = pivotData.value.props.cols
 
-// const rowKeys = pivotData.value.getRowKeys()
-// const colKeys = pivotData.value.getColKeys()
-// const rowAttrs = pivotData.value.props.rows
-// const colAttrs = pivotData.value.props.cols
-
-// const grandTotalAggregator = pivotData.value.getAggregator([], [])
-// console.log('JB :grandTotalAggregator: ', grandTotalAggregator)
+const grandTotalAggregator = pivotData.value.getAggregator([], [])
+*/
 
 const pivotData = ref(new PivotData(props))
+
 const rowKeys = ref()
 const colKeys = ref()
 const rowAttrs = ref()
 const colAttrs = ref()
+
 const grandTotalAggregator = ref(() => pivotData.value.getAggregator([], []))
 
 watchEffect(() => {
-  console.log('JB :data ready?: ', props.data)
   pivotData.value = new PivotData(props)
 
   rowKeys.value = pivotData.value.getRowKeys()
@@ -69,9 +69,7 @@ watchEffect(() => {
   colAttrs.value = pivotData.value.props.cols
 
   grandTotalAggregator.value = pivotData.value.getAggregator([], [])
-  console.log('JB :grandTotalAggregator: ', grandTotalAggregator)
 })
-console.log('JB :: ', pivotData.value)
 
 let valueCellColors = () => {}
 let rowTotalColors = () => {}

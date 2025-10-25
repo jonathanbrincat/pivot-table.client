@@ -19,7 +19,6 @@ function makeRenderer(
   class TableRenderer extends React.PureComponent {
     render() {
       const pivotData = new PivotData(this.props)
-      console.log('JB :TableRenderer: ', pivotData)
 
       const rowKeys = pivotData.getRowKeys()
       const colKeys = pivotData.getColKeys()
