@@ -27,7 +27,11 @@ export default class PivotData {
     
     this.sorted = false
 
-    // iterate through input, accumulating data for cells
+    console.log('JB :: ', this.props.data) // => JB: yeh so this is empty so nothing is happening; the reason the react version works is the difference in the rendering mechanism. likely a hiccup in the asynchronous loading of the data.
+
+    // JB: ISSUE: not executng in vue version
+    // iterate through input, accumulating data for cells; REALLY INEFFICIENT; especially with react render function! to be reinstantiating this class every time!
+    // should be a bloody Singleton or some form of memoization/caching, with an update mechanism when/if data changes; really smelly. thank god i didn't write this
     const wtf = PivotData.forEachRecord(
       this.props.data,
       this.props.derivedAttributes,
@@ -35,12 +39,15 @@ export default class PivotData {
         // JB: if record does not need to be filtered; seems inefficient to do this with the .csv data as lots of duplication.
         // JB: than parse the record => processRecord() to pivottable flavour
         // I would of thought this would be done post massaging into another shape/schema
+
+        // console.log('JB :: ', record)
+
         if (this.filter(record)) {
           this.processRecord(record)
         }
       }
     )
-    // console.log('wtf :1: ', wtf)
+    console.log('wtf :1: ', wtf)
   }
 
   // JB: doesn't get used besides testing
@@ -140,7 +147,9 @@ export default class PivotData {
   }
 
   // JB: this parses to reshape the data
+  // JB: ISSUE: not beng called in vue version
   processRecord(record) {
+    console.log('JB :: ')
     // this code is called in a tight loop
     const colKey = []
     const rowKey = []
@@ -193,6 +202,8 @@ export default class PivotData {
   }
 
   getAggregator(rowKey, colKey) {
+    console.log('JB :: ', rowKey, colKey)
+
     let agg
     const flatRowKey = rowKey.join(String.fromCharCode(0))
     const flatColKey = colKey.join(String.fromCharCode(0))
@@ -206,6 +217,8 @@ export default class PivotData {
     } else {
       agg = this.tree[flatRowKey][flatColKey]
     }
+
+    console.log('JB :agg: ', agg)
     
     return (
       agg || {

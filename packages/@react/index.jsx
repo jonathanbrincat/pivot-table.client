@@ -107,6 +107,8 @@ export default function PivotTableUI(props) {
     )
 
     // console.log('React :criterion: ', criterion)
+    console.log('React :axisX: ', axisX)
+    console.log('React :axisY: ', axisY)
   }, [axisX, axisY, dimensions])
 
   function parseDimensions() {
@@ -403,6 +405,28 @@ export default function PivotTableUI(props) {
           />
         </article>
       </div>
+
+      {/* <div className="flex flex-row gap-4 my-8">
+        <div>
+          <h3>Criterion</h3>
+          <pre className="text-sm" style={{ fontSize: 9 }}>{ JSON.stringify(criterion, null, 2) }</pre>
+        </div>
+
+        <div>
+          <h3>Axis X</h3>
+          <pre className="text-sm" style={{ fontSize: 9 }}>{ JSON.stringify(axisX, null, 2) }</pre>
+        </div>
+
+        <div>
+          <h3>Axis Y</h3>
+          <pre className="text-sm" style={{ fontSize: 9 }}>{ JSON.stringify(axisY, null, 2) }</pre>
+        </div>
+      </div>
+
+      <div>
+        <h3>Dimensions</h3>
+        <pre className="text-sm" style={{ fontSize: 9 }}>{ JSON.stringify(dimensions, null, 2) }</pre>
+      </div> */}
     </>
   )
 }

@@ -1,4 +1,5 @@
 <script setup lang="js">
+import { computed, ref, watchEffect } from 'vue'
 import PivotData from '../../../@core/js/PivotData'
 import { redColorScaleGenerator, spanSize } from '../../../@core/js/ui'
 
@@ -11,17 +12,66 @@ const STATICS = {
 }
 
 const props = defineProps({
+  // JB: there are defaults in PivotData.defaultProps that should be transferred, however also duplication.
+  aggregators: Object,
+  cols: Array,
+  rows: Array,
+  vals: Array,
+  aggregatorName: String,
+  sorters: Object,
+  valueFilter: Object,
+  rowOrder: String,
+  colOrder: String,
+  derivedAttributes: Object,
+
+  tableColorScaleGenerator: {
+    type: Function,
+    default: () => redColorScaleGenerator,
+  },
+  tableOptions: {
+    type: Object,
+    default: () => ({}),
+  },
+
   data: Array,
 })
 
-const pivotData = new PivotData(props)
+// JB: ISSUE: computed not working as expected and recognising the reactivity of props.data
+// const pivotData = computed(() => {
+//   console.log('JB :data ready?: ', props.data) // JB: data not loaded at th point and no reactivity
+//   return new PivotData(props)
+// })
 
-const rowKeys = pivotData.getRowKeys()
-const colKeys = pivotData.getColKeys()
-const rowAttrs = pivotData.props.rows
-const colAttrs = pivotData.props.cols
+// console.log('JB :: ', pivotData.value)
 
-const grandTotalAggregator = pivotData.getAggregator([], [])
+// const rowKeys = pivotData.value.getRowKeys()
+// const colKeys = pivotData.value.getColKeys()
+// const rowAttrs = pivotData.value.props.rows
+// const colAttrs = pivotData.value.props.cols
+
+// const grandTotalAggregator = pivotData.value.getAggregator([], [])
+// console.log('JB :grandTotalAggregator: ', grandTotalAggregator)
+
+const pivotData = ref(new PivotData(props))
+const rowKeys = ref()
+const colKeys = ref()
+const rowAttrs = ref()
+const colAttrs = ref()
+const grandTotalAggregator = ref(() => pivotData.value.getAggregator([], []))
+
+watchEffect(() => {
+  console.log('JB :data ready?: ', props.data)
+  pivotData.value = new PivotData(props)
+
+  rowKeys.value = pivotData.value.getRowKeys()
+  colKeys.value = pivotData.value.getColKeys()
+  rowAttrs.value = pivotData.value.props.rows
+  colAttrs.value = pivotData.value.props.cols
+
+  grandTotalAggregator.value = pivotData.value.getAggregator([], [])
+  console.log('JB :grandTotalAggregator: ', grandTotalAggregator)
+})
+console.log('JB :: ', pivotData.value)
 
 let valueCellColors = () => {}
 let rowTotalColors = () => {}
@@ -62,58 +112,127 @@ const getClickHandler =
 
 <template>
   <div class="border-red-500 border-2 p-2">
-    <h1 class="text-red-500">Table Renderer</h1>
-    
-    <!-- <code class="text-xs">{{ props.data }}</code> -->
+    <!-- <code class="text-sm">{{ JSON.stringify(props.rows, null, 2) }} {{ JSON.stringify(props.cols, null, 2) }}</code> -->
+    <!-- <code class="text-xs">{{ JSON.stringify(pivotData, null, 2) }}</code> -->
 
-    <table className="pvtTable">
+    <table class="pvtTable">
       <thead>
-        <tr v-for="item in colAttrs" :key="`colAttr${j}`">
+        <tr v-for="(item, j) in colAttrs" :key="`colAttr${j}`">
+          <th
+            :rowspan="colAttrs.length"
+            :colspan="rowAttrs.length"
+            v-if="j === 0 && rowAttrs.length !== 0"
+          />
 
-          <!-- AI: auto generated/implied from React version; probably broken -->
-          <th v-if="item && j === 0" :rowspan="colAttrs.length" :colspan="rowAttrs.length" class="pvtAxisLabel"></th>
-          <th v-for="(colKey, i) in colKeys" :key="`colKey${i}`" :colspan="spanSize(colKeys, i, j)" v-if="colKey[j] !== (colKeys[i - 1] && colKeys[i - 1][j])" class="pvtColLabel">
-            {{ colKey[j] || 'Total' }}
+          <th class="pvtAxisLabel">{{ item }}</th>
+          
+          <!-- JB: the vue way would be to use a computed colKeys to filter out any v-if="spanSize(colKeys, i, j) !== -1" -->
+          <template v-for="(colKey, i) in colKeys">
+            <th class="pvtColLabel"
+              :key="`colKey${i}`"
+              :rowspan="j === colAttrs.length - 1 && rowAttrs.length !== 0 ? 2 : 1"
+              :colspan="spanSize(colKeys, i, j)"
+              v-if="spanSize(colKeys, i, j) !== -1"
+            >
+              {{ colKey[j] }}
+            </th>
+          </template>
+
+          <th class="pvtTotalLabel"
+            :rowspan="colAttrs.length + (rowAttrs.length === 0 ? 0 : 1)"
+            v-if="j === 0"
+          >
+            Totals
           </th>
-          <th v-if="j === 0" rowspan="2" class="pvtTotalLabel">Total</th>
+        </tr>
+
+        <tr v-if="rowAttrs.length !== 0">
+          <th class="pvtAxisLabel"
+            v-for="(r, i) in rowAttrs"
+            :key="`rowAttr${i}`"
+          >
+            {{ r }}
+          </th>
+          
+          <th class="pvtTotalLabel">
+            {{ colAttrs.length === 0 ? 'Totals' : null }}
+          </th>
         </tr>
       </thead>
 
       <tbody>
-        <!-- AI: auto generated/implied from React version; probably broken -->
-        <tr v-for="(rowKey, i) in rowKeys" :key="`rowKey${i}`">
-          <th v-for="(r, j) in rowKey" :key="`rowAttr${j}`" v-if="r !== (rowKey[j - 1] && rowKey[j - 1])" :rowspan="spanSize(rowKeys, i, j)" class="pvtRowLabel">
-            {{ r || 'Total' }}
-          </th>
+        <tr v-for="(rowKey, i) in rowKeys" :key="`rowKeyRow${i}`">
+          <template v-for="(txt, j) in rowKey">
+            <th class="pvtRowLabel"
+              :key="`rowKeyLabel${i}-${j}`"
+              :rowspan="spanSize(rowKeys, i, j)"
+              :colSpan="j === rowAttrs.length - 1 && colAttrs.length !== 0 ? 2 : 1"
+              v-if="spanSize(rowKeys, i, j) !== -1"
+            >
+              {{ txt }}
+            </th>
+          </template>
 
-          <td v-for="(colKey, k) in colKeys" :key="`valueCell${k}`" class="pvtVal">
+          <td class="pvtVal"
+            v-for="(colKey, j) in colKeys"
+            :key="`pvtVal${i}-${j}`"
+            :style="valueCellColors(rowKey, colKey, pivotData.getAggregator(rowKey, colKey).value())"
+            @click="getClickHandler && getClickHandler(pivotData.getAggregator(rowKey, colKey).value(), rowKey, colKey)"
+          >
             {{
-              pivotData
-                .getAggregator(rowKey, colKey)
-                .value()
+              pivotData.getAggregator(rowKey, colKey).format(
+                pivotData
+                  .getAggregator(rowKey, colKey)
+                  .value()
+              )
             }}
           </td>
 
-          <td class="pvtTotal">
+          <td class="pvtTotal"
+            :style="colTotalColors(pivotData.getAggregator(rowKey, []).value())"
+            @click="getClickHandler && getClickHandler(pivotData.getAggregator(rowKey, []).value(), rowKey, [null])"
+          >
             {{
-              pivotData
-                .getAggregator(rowKey, [])
-                .value()
+              pivotData.getAggregator(rowKey, []).format(
+                pivotData
+                  .getAggregator(rowKey, [])
+                  .value()
+              )
             }}
           </td>
         </tr>
 
         <tr>
-          <th class="pvtTotalLabel">Total</th>
-          <td v-for="(colKey, k) in colKeys" :key="`colTotal${k}`" class="pvtTotal">
+          <th class="pvtTotalLabel"
+            :colspan="rowAttrs.length + (colAttrs.length === 0 ? 0 : 1)"
+          >
+            Totals
+          </th>
+
+          <td class="pvtTotal"
+            v-for="(colKey, i) in colKeys"
+            :key="`total${i}`"
+            :style="rowTotalColors(pivotData.getAggregator([], colKey).value())"
+            @click="getClickHandler && getClickHandler(pivotData.getAggregator([], colKey).value(), [null], colKey)"
+          >
             {{
-              pivotData
-                .getAggregator([], colKey)
-                .value()
+              pivotData.getAggregator([], colKey).format(
+                pivotData
+                  .getAggregator([], colKey)
+                  .value()
+              )
+              
             }}
           </td>
-          <td class="pvtGrandTotal">
-            {{ grandTotalAggregator.value() }}
+
+          <td class="pvtGrandTotal"
+            @click="getClickHandler && getClickHandler(grandTotalAggregator.value(), [null], [null])"
+          >
+            {{
+              grandTotalAggregator.format(
+                grandTotalAggregator.value()
+              )
+            }}
           </td>
         </tr>
       </tbody>

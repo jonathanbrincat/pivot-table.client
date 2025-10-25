@@ -1,12 +1,37 @@
 import { defineComponent, ref } from 'vue'
 import './dimension.css'
 
-const Dimension2 = defineComponent({
+const Dimension = defineComponent({
   props: {
     item: {
       type: Object,
       required: true,
     },
+    attrValues: {
+      type: Object,
+      default: () => ({}),
+    },
+    valueFilter: {
+      type: Object,
+      default: () => ({}),
+    },
+    isIndeterminate: {
+      type: Boolean,
+      default: false,
+    },
+    setAllValuesInFilter: {
+      required: true,
+    },
+    addValuesToFilter: {
+      required: true,
+    },
+    removeValuesFromFilter: {
+      required: true,
+    },
+    sorter: {
+      required: true,
+    },
+    menuLimit: Number,
   },
 
   setup(props) {
@@ -42,11 +67,11 @@ const Dimension2 = defineComponent({
     }
 
     function createFilterPane() {
-      // const isMenuLimit = Object.keys(props?.attrValues).length < props.menuLimit
+      const isMenuLimit = Object.keys(props?.attrValues).length < props.menuLimit
 
-      // const shown = Object.keys(props?.attrValues)
-      //               .filter(matchesFilter.bind(this))
-      //               .sort(props.sorter)
+      const shown = Object.keys(props?.attrValues)
+                    .filter(matchesFilter.bind(this))
+                    .sort(props.sorter)
 
       return (
         <div class="dimension__dropdown">
@@ -59,7 +84,7 @@ const Dimension2 = defineComponent({
             <h4>{props.name}</h4>
           </header>
 
-          {/* {isMenuLimit || <p>(too many values to show)</p>}
+          {isMenuLimit || <p>(too many values to show)</p>}
 
           {isMenuLimit && (
             <div class="dimension__filters-toolbar">
@@ -101,14 +126,14 @@ const Dimension2 = defineComponent({
                 </li>
               ))}
             </ul>
-          )} */}
+          )}
         </div>
       )
     }
 
-    // const filteredClass = Object.keys(props.valueFilter).length !== 0
-    //                       ? 'pivot__dimension--filter'
-    //                       : ''
+    const filteredClass = Object.keys(props.valueFilter).length !== 0
+                          ? 'pivot__dimension--filter'
+                          : ''
 
     return () => (
       <li class="dimension__list-item sortable">
@@ -126,4 +151,4 @@ const Dimension2 = defineComponent({
   }
 })
 
-export default Dimension2
+export default Dimension

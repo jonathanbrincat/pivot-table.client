@@ -29,7 +29,7 @@ const activeRenderer = ref(STATIC.RENDERER.table)
 onMounted(async () => {
   try {
     const test = await getData(props?.uid)
-    // console.log(test)
+    console.log('DATA LOADED', test)
     dataset.value = test
   } catch (error) {
     console.log('Something went wrong retrieving the data from the endpoint :: ', error)

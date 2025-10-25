@@ -1,8 +1,7 @@
 <script setup lang="js">
 import { ref, computed, watch, watchEffect } from 'vue'
 import Draggable from 'vuedraggable'
-import Dimension from './components/Dimension.vue'
-import Dimension2 from './components/Dimension'
+import Dimension from './components/Dimension'
 import PivotTable from './components/PivotTable.vue'
 import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer } from './components/renderers'
 import { aggregators } from '../@core/js/aggregators'
@@ -93,9 +92,17 @@ const props = defineProps(
   }
 )
 
-// for (const key in props.renderers) {
-//   console.log(key, 'JB :vue: ', props.renderers[key])
-// }
+const list1 = ref([
+  { name: "John", id: 1 },
+  { name: "Joao", id: 2 },
+  { name: "Jean", id: 3 },
+  { name: "Gerard", id: 4 },
+  { name: "Juan", id: 5 },
+  { name: "Edgard", id: 6 },
+  { name: "Johnson", id: 7 }
+])
+const list2 = ref([])
+const list3 = ref([])
 
 const dimensions = ref({})
 
@@ -121,12 +128,45 @@ const sortByRow = ref(sortBy.row[0].value)
 const sortByColumn = ref(sortBy.column[0].value)
 
 watchEffect(() => {
+  activeRenderer.value = props.rendererName
+})
+
+watchEffect(() => {
+  filters.value = props.valueFilter
+})
+
+watchEffect(() => {
   if (props.data) {
     dimensions.value = { ...parseDimensions() }
   }
 })
 
-watch([axisX, axisY, dimensions], (newValue, oldValue) => {
+watch(
+  [() => dimensions.value, () => props.rows, () => props.cols, () => props.hiddenAttributes, () => props.hiddenFromDragDrop],
+  ([newDimensions]) => {
+  axisX.value =
+    Object.keys(newDimensions)
+      .map((item, index) => ({ id: `dimension-${++index}`, name: item }))
+      .filter(
+        ({ name }) =>
+          !props.hiddenAttributes.includes(name) &&
+          !props.hiddenFromDragDrop.includes(name)
+      )
+      .filter(({name}) => props.cols.includes(name))
+
+  axisY.value =
+    Object.keys(newDimensions)
+      .map((item, index) => ({ id: `dimension-${++index}`, name: item }))
+      .filter(
+        ({ name }) =>
+          !props.hiddenAttributes.includes(name) &&
+          !props.hiddenFromDragDrop.includes(name)
+      )
+      .filter(({ name }) => props.rows.includes(name))
+}, { immediate: true })
+
+// JB: consider using a computed for criterion
+watch([axisX, axisY, dimensions], ([newValue, oldValue], [x, y]) => {
   // console.log('Vue :dimensions: set criterion ', dimensions.value)
 
   criterion.value = Object.keys(dimensions.value)
@@ -145,7 +185,10 @@ watch([axisX, axisY, dimensions], (newValue, oldValue) => {
     .sort(sortAs)
   
   // console.log('Vue :criterion: ', criterion.value)
-}, { immediate: true }) // `immediate: true` makes the watch run immediately on setup
+  // console.log('Vue :axisX: ', axisX.value)
+  // console.log('Vue :axisY: ', axisY.value)
+
+}, { immediate: true, deep: true })
 
 function parseDimensions() {
   const results = {}
@@ -195,11 +238,46 @@ const numValsAllowed = props.aggregators[activeAggregator]([])().numInputs || 0
 const aggregatorCellOutlet = props.aggregators[activeAggregator]([])().outlet
 */
 
-function setAllValuesInFilter(attribute, values) {}
+function setAllValuesInFilter(attribute, values) {
+  const { [attribute]: _discard_, ...rest } = filters.value // JB: pretty suure destructuring reactive refs is a no no in vue
+  const collection = values.reduce((acc, obj) => {
+    if (acc[attribute]) {
+      acc[attribute][obj] = true
+    } else {
+      acc[attribute] = { [obj]: true }
+    }
 
-function addValuesToFilter(attribute, values) {}
+    return acc
+  }, rest)
 
-function removeValuesFromFilter(attribute, values) {}
+  filters.value = { ...filters.value, ...collection }
+}
+
+function addValuesToFilter(attribute, values) {
+  const collection = values.reduce((acc, obj) => {
+    if(acc[attribute]) {
+      acc[attribute][obj] = true
+    } else {
+      acc[attribute] = {[obj]: true}
+    }
+
+    return acc
+  }, filters.value)
+
+  filters.value = { ...filters, ...collection }
+}
+
+function removeValuesFromFilter(attribute, values) {
+  const collection = values.reduce((acc, obj) => {
+    if (acc[attribute]) {
+      delete acc[attribute][obj]
+    }
+
+    return acc
+  }, filters.value)
+
+  filters.value = { ...filters, ...collection }
+}
 
 function createCluster(items, onSortableChangeHandler) {}
 </script>
@@ -210,7 +288,6 @@ function createCluster(items, onSortableChangeHandler) {}
       <select
         class="ui__select"
         v-model="activeRenderer"
-        @change="(event) => activeRenderer = event.target.value"
       >
         <option v-for="(item, index) in Object.keys(props.renderers)" :value="item" :key="`renderer-${index}`">{{ item }}</option>
       </select>
@@ -218,9 +295,8 @@ function createCluster(items, onSortableChangeHandler) {}
 
     <aside class="pivot__aggregator">
       <select
-        className="ui__select"
+        class="ui__select"
         v-model="activeAggregator"
-        @change="(event) => activeAggregator = event.target.value"
       >
         <option v-for="(item, index) in Object.keys(props.aggregators)" :value="item" :key="`aggregator-${index}`">{{ item }}</option>
       </select>
@@ -251,20 +327,15 @@ function createCluster(items, onSortableChangeHandler) {}
 
     <!-- JB: other than returning basic html strings(and string interpolation) with a function using v-html, anything more complex needs to be done outside of <template> with a render function -->
     <div class="pivot__criterion">
-      <!--
-      {{
-        !!criterion?.length && createCluster(
-          criterion,
-          (collection) => criterion = collection,
-        )
-      }}
-      -->
       <!-- JB: re: setList; I think it's doing this automagically -->
+      <!-- 
+        :setList="(collection) => criterion = collection"
+        @change="(collection) => criterion = collection"
+      -->
       <Draggable
         class="dimension__list"
         tag="ul"
         :list="criterion"
-        :setList="(collection) => criterion = collection"
         group="pivot__dimension"
         ghost-class="sortable--ghost"
         chosen-class="sortable--chosen"
@@ -274,27 +345,30 @@ function createCluster(items, onSortableChangeHandler) {}
         item-key="name"
       >
         <template #item="{ element: item }">
-          <Dimension2 :item="item" />
+          <Dimension
+            :item="item"
+            :name="item.name"
+            :attrValues="dimensions[item.name]"
+            :valueFilter="filters[item.name] || {}"
+            :sorter="getSort(props.sorters, item.name)"
+            :menuLimit="props.menuLimit"
+            :setAllValuesInFilter="setAllValuesInFilter"
+            :addValuesToFilter="addValuesToFilter"
+            :removeValuesFromFilter="removeValuesFromFilter"
+          />
         </template>
       </Draggable>
     </div>
 
-
+    <!-- 
+    :setList="(collection) => axisX = collection"
+    @change="(collection) => axisX = collection"
+    -->
     <div class="pivot__axis pivot__axis-x">
-      <!--
-      {{
-        createCluster(
-          axisX,
-          (collection) => axisX = collection,
-        )
-      }}
-      -->
-
       <Draggable
         class="dimension__list"
         tag="ul"
         :list="axisX"
-        :setList="(collection) => axisX = collection"
         group="pivot__dimension"
         ghost-class="sortable--ghost"
         chosen-class="sortable--chosen"
@@ -304,24 +378,30 @@ function createCluster(items, onSortableChangeHandler) {}
         item-key="name"
       >
         <template #item="{ element: item }">
-          <Dimension :item="item" />
+          <Dimension
+            :item="item"
+            :name="item.name"
+            :attrValues="dimensions[item.name]"
+            :valueFilter="filters[item.name] || {}"
+            :sorter="getSort(props.sorters, item.name)"
+            :menuLimit="props.menuLimit"
+            :setAllValuesInFilter="setAllValuesInFilter"
+            :addValuesToFilter="addValuesToFilter"
+            :removeValuesFromFilter="removeValuesFromFilter"
+          />
         </template>
       </Draggable>
     </div>
 
+    <!--
+    :setList="(collection) => axisY = collection"
+    @change="(collection) => axisY = collection"
+    -->
     <div class="pivot__axis pivot__axis-y">
-      <!-- {{
-        createCluster(
-          axisY,
-          (collection) => axisY = collection,
-        )
-      }} -->
-
       <Draggable
         class="dimension__list"
         tag="ul"
         :list="axisY"
-        :setList="(collection) => axisY = collection"
         group="pivot__dimension"
         ghost-class="sortable--ghost"
         chosen-class="sortable--chosen"
@@ -331,7 +411,17 @@ function createCluster(items, onSortableChangeHandler) {}
         item-key="name"
       >
         <template #item="{ element: item }">
-          <Dimension :item="item" />
+          <Dimension
+            :item="item"
+            :name="item.name"
+            :attrValues="dimensions[item.name]"
+            :valueFilter="filters[item.name] || {}"
+            :sorter="getSort(props.sorters, item.name)"
+            :menuLimit="props.menuLimit"
+            :setAllValuesInFilter="setAllValuesInFilter"
+            :addValuesToFilter="addValuesToFilter"
+            :removeValuesFromFilter="removeValuesFromFilter"
+          />
         </template>
       </Draggable>
     </div>
@@ -343,6 +433,7 @@ function createCluster(items, onSortableChangeHandler) {}
           <h4>{{ activeRenderer.toLowerCase().includes('table') ? 'row' : 'y-axis' }}</h4>
           <div class="sortBy__control-group">
             <label class="sortBy__toggle" v-for="(item, index) in sortBy.row" :key="index">
+              <!-- JB: can replace with v-model -->
               <input
                 type="radio"
                 name="sort-by-row"
@@ -357,10 +448,11 @@ function createCluster(items, onSortableChangeHandler) {}
       
         <hr />
 
-        <div className="sortBy__x">
+        <div class="sortBy__x">
           <h4>{{ activeRenderer.toLowerCase().includes('table') ? 'column' : 'x-axis' }}</h4>
           <div class="sortBy__control-group">
             <label class="sortBy__toggle" v-for="(item, index) in sortBy.column" :key="index">
+              <!-- JB: can replace with v-model -->
               <input
                 type="radio"
                 name="sort-by-column"
@@ -391,6 +483,87 @@ function createCluster(items, onSortableChangeHandler) {}
       />
     </article>
   </div>
+
+  <!-- <div class="flex flex-row gap-4 my-8">
+    <div>
+      <h3>Criterion</h3>
+      <pre class="text-xs" style="font-size: 9px;">{{ JSON.stringify(criterion, null, 2) }}</pre>
+    </div>
+
+    <div>
+      <h3>Axis X</h3>
+      <pre class="text-xs" style="font-size: 9px;">{{ JSON.stringify(axisX, null, 2) }}</pre>
+    </div>
+
+    <div>
+      <h3>Axis Y</h3>
+      <pre class="text-xs" style="font-size: 9px;">{{ JSON.stringify(axisY, null, 2) }}</pre>
+    </div>
+  </div>
+
+  <div>
+    <h3>Dimensions</h3>
+    <pre class="text-xs" style="font-size: 9px;">{{ JSON.stringify(dimensions, null, 2) }}</pre>
+  </div> -->
+
+    <!-- <div class="flex flex-row gap-4 mb-4">
+      <div class="">
+        <h3>Dimension</h3>
+        <draggable
+          class="list-group"
+          :list="list1"
+          group="people"
+          itemKey="name"
+        >
+          <template #item="{ element, index }">
+            <div class="list-group-item">{{ element.name }} {{ index }}</div>
+          </template>
+        </draggable>
+      </div>
+
+      <div class="">
+        <h3>Axis X</h3>
+        <draggable
+          class="list-group"
+          :list="list2"
+          group="people"
+          itemKey="name"
+        >
+          <template #item="{ element, index }">
+            <div class="list-group-item">{{ element.name }} {{ index }}</div>
+          </template>
+        </draggable>
+      </div>
+
+      <div class="">
+        <h3>Axis Y</h3>
+        <draggable
+          class="list-group"
+          :list="list3"
+          group="people"
+          itemKey="name"
+        >
+          <template #item="{ element, index }">
+            <div class="list-group-item">{{ element.name }} {{ index }}</div>
+          </template>
+        </draggable>
+      </div>
+
+      <div>
+        <h3>Dimension</h3>
+        <pre>{{ JSON.stringify(list1, null, 2) }}</pre>
+      </div>
+
+      <div>
+        <h3>Axis X</h3>
+        <pre>{{ JSON.stringify(list2, null, 2) }}</pre>
+      </div>
+
+      <div>
+        <h3>Axis Y</h3>
+        <pre>{{ JSON.stringify(list3, null, 2) }}</pre>
+      </div>
+    </div> -->
 </template>
 
 <style>

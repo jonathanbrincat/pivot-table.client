@@ -1,7 +1,6 @@
 import { defineComponent, ref, computed, watch, watchEffect } from 'vue'
 import Draggable from 'vuedraggable'
-import Dimension from './components/Dimension.vue'
-import Dimension2 from './components/Dimension'
+import Dimension from './components/Dimension'
 import PivotTable from './components/PivotTable.vue'
 import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer } from './components/renderers'
 import { aggregators } from '../@core/js/aggregators'
@@ -98,10 +97,6 @@ export default defineComponent({
   ),
 
   setup(props) {
-    // for (const key in props.renderers) {
-    //   console.log(key, 'JB :vue: ', props.renderers[key])
-    // }
-
     const dimensions = ref({})
 
     const axisX = ref(props.cols ?? [])
@@ -126,11 +121,44 @@ export default defineComponent({
     const sortByColumn = ref(sortBy.column[0].value)
 
     watchEffect(() => {
+      activeRenderer.value = props.rendererName
+    })
+
+    watchEffect(() => {
+      filters.value = props.valueFilter
+    })
+
+    watchEffect(() => {
       if (props.data) {
         dimensions.value = { ...parseDimensions() }
       }
     })
 
+    watch(
+      [() => dimensions.value, () => props.rows, () => props.cols, () => props.hiddenAttributes, () => props.hiddenFromDragDrop],
+      ([newDimensions]) => {
+      axisX.value =
+        Object.keys(newDimensions)
+          .map((item, index) => ({ id: `dimension-${++index}`, name: item }))
+          .filter(
+            ({ name }) =>
+              !props.hiddenAttributes.includes(name) &&
+              !props.hiddenFromDragDrop.includes(name)
+          )
+          .filter(({name}) => props.cols.includes(name))
+
+      axisY.value =
+        Object.keys(newDimensions)
+          .map((item, index) => ({ id: `dimension-${++index}`, name: item }))
+          .filter(
+            ({ name }) =>
+              !props.hiddenAttributes.includes(name) &&
+              !props.hiddenFromDragDrop.includes(name)
+          )
+          .filter(({ name }) => props.rows.includes(name))
+    }, { immediate: true })
+
+    // JB: consider using a computed
     watch([axisX, axisY, dimensions], (newValue, oldValue) => {
       // console.log('Vue :dimensions: set criterion ', dimensions.value)
 
@@ -200,13 +228,96 @@ export default defineComponent({
     const aggregatorCellOutlet = props.aggregators[activeAggregator]([])().outlet
     */
 
-    function setAllValuesInFilter(attribute, values) {}
+    function setAllValuesInFilter(attribute, values) {
+      const { [attribute]: _discard_, ...rest } = filters.value // JB: pretty suure destructuring reactive refs is a no no in vue
+      const collection = values.reduce((acc, obj) => {
+        if (acc[attribute]) {
+          acc[attribute][obj] = true
+        } else {
+          acc[attribute] = { [obj]: true }
+        }
 
-    function addValuesToFilter(attribute, values) {}
+        return acc
+      }, rest)
 
-    function removeValuesFromFilter(attribute, values) {}
+      filters.value = { ...filters.value, ...collection }
+    }
 
-    function createCluster(items, onSortableChangeHandler) {}
+    function addValuesToFilter(attribute, values) {
+      const collection = values.reduce((acc, obj) => {
+        if(acc[attribute]) {
+          acc[attribute][obj] = true
+        } else {
+          acc[attribute] = {[obj]: true}
+        }
+
+        return acc
+      }, filters.value)
+
+      filters.value = { ...filters, ...collection }
+    }
+
+    function removeValuesFromFilter(attribute, values) {
+      const collection = values.reduce((acc, obj) => {
+        if (acc[attribute]) {
+          delete acc[attribute][obj]
+        }
+
+        return acc
+      }, filters.value)
+
+      filters.value = { ...filters, ...collection }
+    }
+
+    function createCluster(items, onSortableChangeHandler) {
+      // console.log(items, ' :: ',items)
+      
+      const temp = (
+        // BUG: if no presets are supplied then UI isn't initialise with reactsortable; empty array won't have object to check for prop
+        // Object.prototype.hasOwnProperty.call(items[0], 'name') &&
+        <Draggable
+          class="dimension__list"
+          tag="ul"
+          list={items}
+          setList={onSortableChangeHandler}
+          group="pivot__dimension"
+          ghostClass="sortable--ghost"
+          chosenClass="sortable--chosen"
+          dragClass="sortable--drag"
+          filter=".dimension__dropdown"
+          preventOnFilter={false}
+          item-key="name"
+        >
+          {/* {
+            items.map(
+              (item, index) => {
+                return (
+                  {{
+                    item: ({ element }) => (
+                      <Dimension
+                        item={element}
+                        name={item.name}
+                        key={`${item.id}-${index}`}
+                        attrValues={dimensions[item.name]}
+                        valueFilter={filters[item.name] || {}}
+                        sorter={getSort(props.sorters, item.name)}
+                        menuLimit={props.menuLimit}
+                        setAllValuesInFilter={setAllValuesInFilter}
+                        addValuesToFilter={addValuesToFilter}
+                        removeValuesFromFilter={removeValuesFromFilter}
+                      />
+                    )
+                  }}
+                )
+              }
+            )
+          } */}
+        </Draggable>
+      )
+      // console.log(' :: ',temp)
+  
+      return temp
+    }
 
     return () => (
       <>
@@ -272,26 +383,42 @@ export default defineComponent({
             {
               !!criterion?.length && createCluster(
                 criterion,
-                (collection) => criterion = collection,
+                (collection) => criterion.value = collection,
               )
             }
             */}
             {/* JB: re: setList; I think it's doing this automagically */}
+            {/*  
+              setList={(collection) => criterion.value = collection}
+              onChange={(collection) => criterion.value = collection}
+            */}
+
             <Draggable
               class="dimension__list"
               tag="ul"
               list={criterion.value}
-              setList={(collection) => criterion.value = collection}
               group="pivot__dimension"
               ghostClass="sortable--ghost"
               chosenClass="sortable--chosen"
-              drag-class="sortable--drag"
+              dragClass="sortable--drag"
               filter=".dimension__dropdown"
               preventOnFilter={false}
               item-key="name"
             >
               {{
-                item: ({ element }) => <Dimension2 item={element} />
+                item: ({ element: item }) => (
+                  <Dimension
+                    item={item}
+                    name={item.name}
+                    attrValues={dimensions[item.name]}
+                    valueFilter={filters[item.name] || {}}
+                    sorter={getSort(props.sorters, item.name)}
+                    menuLimit={props.menuLimit}
+                    setAllValuesInFilter={setAllValuesInFilter}
+                    addValuesToFilter={addValuesToFilter}
+                    removeValuesFromFilter={removeValuesFromFilter}
+                  />
+                ),
               }}
             </Draggable>
           </div>
@@ -306,22 +433,40 @@ export default defineComponent({
               )
             }
             */}
+            {/* 
+              setList={(collection) => axisX.value = collection}
+              onChange={(collection) => axisX.value = collection}
+            */}
 
             <Draggable
               class="dimension__list"
               tag="ul"
               list={axisX.value}
-              setList={(collection) => axisX.value = collection}
+              
               group="pivot__dimension"
               ghostClass="sortable--ghost"
               chosenClass="sortable--chosen"
-              drag-class="sortable--drag"
+              dragClass="sortable--drag"
               filter=".dimension__dropdown"
               preventOnFilter={false}
               item-key="name"
             >
               {{
-                item: ({ element }) => <Dimension2 item={element} />
+                item: ({ element: item }) => {
+                  return (
+                    <Dimension
+                      item={item}
+                      name={item.name}
+                      attrValues={dimensions[item.name]}
+                      valueFilter={filters[item.name] || {}}
+                      sorter={getSort(props.sorters, item.name)}
+                      menuLimit={props.menuLimit}
+                      setAllValuesInFilter={setAllValuesInFilter}
+                      addValuesToFilter={addValuesToFilter}
+                      removeValuesFromFilter={removeValuesFromFilter}
+                    />
+                  )
+                }
               }}
             </Draggable>
           </div>
@@ -333,6 +478,10 @@ export default defineComponent({
                 (collection) => axisY = collection,
               )
             } */}
+            {/* 
+              setList={(collection) => axisX.value = collection}
+              onChange={(collection) => axisX.value = collection}
+            */}
 
             <Draggable
               class="dimension__list"
@@ -340,15 +489,27 @@ export default defineComponent({
               list={axisY.value}
               setList={(collection) => axisY.value = collection}
               group="pivot__dimension"
-              ghost-class="sortable--ghost"
-              chosen-class="sortable--chosen"
-              drag-class="sortable--drag"
+              ghostClass="sortable--ghost"
+              chosenClass="sortable--chosen"
+              dragClass="sortable--drag"
               filter=".dimension__dropdown"
               preventOnFilter={false}
               item-key="name"
             >
               {{
-                item: ({ element }) => <Dimension2 item={element} />
+                item: ({ element: item }) => (
+                  <Dimension
+                    item={item}
+                    name={item.name}
+                    attrValues={dimensions[item.name]}
+                    valueFilter={filters[item.name] || {}}
+                    sorter={getSort(props.sorters, item.name)}
+                    menuLimit={props.menuLimit}
+                    setAllValuesInFilter={setAllValuesInFilter}
+                    addValuesToFilter={addValuesToFilter}
+                    removeValuesFromFilter={removeValuesFromFilter}
+                  />
+                )
               }}
             </Draggable>
           </div>
@@ -405,6 +566,9 @@ export default defineComponent({
           </div>
 
           <article class="pivot__output">
+            {/* <p>{rows = rows}</p>
+            <p>{cols = cols}</p> */}
+
             <PivotTable
               data={props.data}
               renderers={props.renderers}

@@ -19,6 +19,7 @@ function makeRenderer(
   class TableRenderer extends React.PureComponent {
     render() {
       const pivotData = new PivotData(this.props)
+      console.log('JB :TableRenderer: ', pivotData)
 
       const rowKeys = pivotData.getRowKeys()
       const colKeys = pivotData.getColKeys()
@@ -114,187 +115,193 @@ function makeRenderer(
           : null
 
       return (
-        <table className="pvtTable">
-          <thead>
-            {
-              colAttrs.map(function(c, j) {
-                return (
-                  <tr key={`colAttr${j}`}>
-                    {j === 0 && rowAttrs.length !== 0 && (
-                      <th colSpan={rowAttrs.length} rowSpan={colAttrs.length} />
-                    )}
+        <>
+          {/* <code className="text-sm">{JSON.stringify(this.props.rows, null, 2)} {JSON.stringify(this.props.cols, null, 2)}</code> */}
+          {/* <code className="text-xs">{JSON.stringify(pivotData, null, 2)}</code> */}
 
-                    <th className="pvtAxisLabel">{c}</th>
-                    {
-                      colKeys.map(function(colKey, i) {
-                        const x = spanSize(colKeys, i, j)
-                        if (x === -1) {
-                          return null;
-                        }
-
-                        return (
-                          <th
-                            className="pvtColLabel"
-                            key={`colKey${i}`}
-                            colSpan={x}
-                            rowSpan={
-                              j === colAttrs.length - 1 && rowAttrs.length !== 0
-                                ? 2
-                                : 1
-                            }
-                          >
-                            {colKey[j]}
-                          </th>
-                        )
-                      })
-                    }
-
-                    {j === 0 && (
-                      <th
-                        className="pvtTotalLabel"
-                        rowSpan={
-                          colAttrs.length + (rowAttrs.length === 0 ? 0 : 1)
-                        }
-                      >
-                        Totals
-                      </th>
-                    )}
-                  </tr>
-                );
-              })
-            }
-
-            {
-              rowAttrs.length !== 0 && (
-                <tr>
-                  {
-                    rowAttrs.map(function(r, i) {
-                      return (
-                        <th className="pvtAxisLabel" key={`rowAttr${i}`}>
-                          {r}
-                        </th>
-                      );
-                    })
-                  }
-                  
-                  <th className="pvtTotalLabel">
-                    {colAttrs.length === 0 ? 'Totals' : null}
-                  </th>
-                </tr>
-              )
-            }
-          </thead>
-
-          <tbody>
-            {
-              rowKeys.map(function(rowKey, i) {
-                const totalAggregator = pivotData.getAggregator(rowKey, []);
-                return (
-                  <tr key={`rowKeyRow${i}`}>
-                    {
-                      rowKey.map(function(txt, j) {
-                        const x = spanSize(rowKeys, i, j)
-
-                        if (x === -1) {
-                          return null;
-                        }
-
-                        return (
-                          <th
-                            key={`rowKeyLabel${i}-${j}`}
-                            className="pvtRowLabel"
-                            rowSpan={x}
-                            colSpan={
-                              j === rowAttrs.length - 1 && colAttrs.length !== 0
-                                ? 2
-                                : 1
-                            }
-                          >
-                            {txt}
-                          </th>
-                        )
-                      })
-                    }
-
-                    {
-                      colKeys.map(function(colKey, j) {
-                        const aggregator = pivotData.getAggregator(rowKey, colKey)
-
-                        return (
-                          <td
-                            className="pvtVal"
-                            key={`pvtVal${i}-${j}`}
-                            onClick={
-                              getClickHandler &&
-                              getClickHandler(aggregator.value(), rowKey, colKey)
-                            }
-                            style={valueCellColors(
-                              rowKey,
-                              colKey,
-                              aggregator.value()
-                            )}
-                          >
-                            {aggregator.format(aggregator.value())}
-                          </td>
-                        )
-                      })
-                    }
-
-                    <td
-                      className="pvtTotal"
-                      onClick={
-                        getClickHandler &&
-                        getClickHandler(totalAggregator.value(), rowKey, [null])
-                      }
-                      style={colTotalColors(totalAggregator.value())}
-                    >
-                      {totalAggregator.format(totalAggregator.value())}
-                    </td>
-                  </tr>
-                );
-              })
-            }
-
-            <tr>
-              <th
-                className="pvtTotalLabel"
-                colSpan={rowAttrs.length + (colAttrs.length === 0 ? 0 : 1)}
-              >
-                Totals
-              </th>
-
+          <table className="pvtTable">
+            <thead>
               {
-                colKeys.map(function(colKey, i) {
-                  const totalAggregator = pivotData.getAggregator([], colKey)
-
+                colAttrs.map(function(item, j) {
                   return (
-                    <td
-                      className="pvtTotal"
-                      key={`total${i}`}
-                      onClick={
-                        getClickHandler &&
-                        getClickHandler(totalAggregator.value(), [null], colKey)
+                    <tr key={`colAttr${j}`}>
+                      {j === 0 && rowAttrs.length !== 0 && (
+                        <th rowSpan={colAttrs.length} colSpan={rowAttrs.length} />
+                      )}
+
+                      <th className="pvtAxisLabel">{item}</th>
+
+                      {
+                        colKeys.map(function(colKey, i) {
+                          const x = spanSize(colKeys, i, j)
+                          if (x === -1) {
+                            return null
+                          }
+
+                          return (
+                            <th
+                              className="pvtColLabel"
+                              key={`colKey${i}`}
+                              rowSpan={
+                                j === colAttrs.length - 1 && rowAttrs.length !== 0
+                                  ? 2
+                                  : 1
+                              }
+                              colSpan={x}
+                            >
+                              {colKey[j]}
+                            </th>
+                          )
+                        })
                       }
-                      style={rowTotalColors(totalAggregator.value())}
-                    >
-                      {totalAggregator.format(totalAggregator.value())}
-                    </td>
+
+                      {j === 0 && (
+                        <th
+                          className="pvtTotalLabel"
+                          rowSpan={
+                            colAttrs.length + (rowAttrs.length === 0 ? 0 : 1)
+                          }
+                        >
+                          Totals
+                        </th>
+                      )}
+                    </tr>
                   )
                 })
               }
 
-              <td
-                onClick={
-                  getClickHandler &&
-                  getClickHandler(grandTotalAggregator.value(), [null], [null])
+              {
+                rowAttrs.length !== 0 && (
+                  <tr>
+                    {
+                      rowAttrs.map(function(r, i) {
+                        return (
+                          <th className="pvtAxisLabel" key={`rowAttr${i}`}>
+                            {r}
+                          </th>
+                        )
+                      })
+                    }
+                    
+                    <th className="pvtTotalLabel">
+                      {colAttrs.length === 0 ? 'Totals' : null}
+                    </th>
+                  </tr>
+                )
+              }
+            </thead>
+
+            <tbody>
+              {
+                rowKeys.map(function(rowKey, i) {
+                  const totalAggregator = pivotData.getAggregator(rowKey, [])
+                  return (
+                    <tr key={`rowKeyRow${i}`}>
+                      {
+                        rowKey.map(function(txt, j) {
+                          const x = spanSize(rowKeys, i, j)
+
+                          if (x === -1) {
+                            return null
+                          }
+
+                          return (
+                            <th
+                              className="pvtRowLabel"
+                              key={`rowKeyLabel${i}-${j}`}
+                              rowSpan={x}
+                              colSpan={
+                                j === rowAttrs.length - 1 && colAttrs.length !== 0
+                                  ? 2
+                                  : 1
+                              }
+                            >
+                              {txt}
+                            </th>
+                          )
+                        })
+                      }
+
+                      {
+                        colKeys.map(function(colKey, j) {
+                          const aggregator = pivotData.getAggregator(rowKey, colKey)
+
+                          return (
+                            <td
+                              className="pvtVal"
+                              key={`pvtVal${i}-${j}`}
+                              onClick={
+                                getClickHandler &&
+                                getClickHandler(aggregator.value(), rowKey, colKey)
+                              }
+                              style={valueCellColors(
+                                rowKey,
+                                colKey,
+                                aggregator.value()
+                              )}
+                            >
+                              {aggregator.format(aggregator.value())}
+                            </td>
+                          )
+                        })
+                      }
+
+                      <td
+                        className="pvtTotal"
+                        onClick={
+                          getClickHandler &&
+                          getClickHandler(totalAggregator.value(), rowKey, [null])
+                        }
+                        style={colTotalColors(totalAggregator.value())}
+                      >
+                        {totalAggregator.format(totalAggregator.value())}
+                      </td>
+                    </tr>
+                  )
+                })
+              }
+
+              <tr>
+                <th
+                  className="pvtTotalLabel"
+                  colSpan={rowAttrs.length + (colAttrs.length === 0 ? 0 : 1)}
+                >
+                  Totals
+                </th>
+
+                {
+                  colKeys.map(function(colKey, i) {
+                    const totalAggregator = pivotData.getAggregator([], colKey)
+
+                    return (
+                      <td
+                        className="pvtTotal"
+                        key={`total${i}`}
+                        onClick={
+                          getClickHandler &&
+                          getClickHandler(totalAggregator.value(), [null], colKey)
+                        }
+                        style={rowTotalColors(totalAggregator.value())}
+                      >
+                        {totalAggregator.format(totalAggregator.value())}
+                      </td>
+                    )
+                  })
                 }
-                className="pvtGrandTotal"
-              >
-                {grandTotalAggregator.format(grandTotalAggregator.value())}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+                <td
+                  className="pvtGrandTotal"
+                  onClick={
+                    getClickHandler &&
+                    getClickHandler(grandTotalAggregator.value(), [null], [null])
+                  }
+                >
+                  {grandTotalAggregator.format(grandTotalAggregator.value())}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </>
       )
     }
   }
@@ -319,4 +326,4 @@ export default {
   'Table Heatmap': makeRenderer({heatmapMode: STATICS.heatmapMode.full}),
   'Table Column Heatmap': makeRenderer({heatmapMode: STATICS.heatmapMode.column}),
   'Table Row Heatmap': makeRenderer({heatmapMode: STATICS.heatmapMode.row}),
-};
+}

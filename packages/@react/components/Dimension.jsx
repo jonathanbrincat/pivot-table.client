@@ -103,9 +103,9 @@ export default function Dimension(props = {
           <ul className="filters__list">
             {shown.map(item => (
               <li
+                className={`filters__list-item ${item in props.valueFilter ? '' : 'filters__list-item--selected'}`}
                 key={item}
                 onClick={() => toggleValue(item)}
-                className={`filters__list-item ${item in props.valueFilter ? '' : 'filters__list-item--selected'}`}
               >
                 <div className="pivot__filter">
                   <a className="filter__toggle-only" onClick={event => selectOnly(event, item)}>
