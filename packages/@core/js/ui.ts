@@ -45,7 +45,7 @@ export function spanSize(arr, i, j) {
 }
 
 export function redColorScaleGenerator(values: [number]): (x: number) => {backgroundColor: string} {
-  console.log('redColorScaleGenerator() :: ', values)
+  // console.log('redColorScaleGenerator() :: ', values)
 
   // Guard against empty or invalid arrays
   if (!Array.isArray(values) || values.length === 0) {
@@ -56,7 +56,7 @@ export function redColorScaleGenerator(values: [number]): (x: number) => {backgr
   // const max = Math.max.apply(Math, values)
   const min = Math.min(...values)
   const max = Math.max(...values)
-  console.log('min =', min, ' max = ', max)
+  // console.log('min =', min, ' max = ', max)
 
   // Guard against invalid min/max
   if (isNaN(min) || isNaN(max) || min === max) {
@@ -64,7 +64,7 @@ export function redColorScaleGenerator(values: [number]): (x: number) => {backgr
   }
 
   return (x: number) => {
-    console.log(x, ' Closure context: min =', min, ' max =', max, ' values =', values)
+    // console.log(x, ' Closure context: min =', min, ' max =', max, ' values =', values)
 
     // Guard against invalid input
     if (typeof x !== 'number' || isNaN(x)) {

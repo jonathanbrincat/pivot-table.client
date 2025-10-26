@@ -15,9 +15,9 @@ const STATICS = {
 function makeRenderer(
   config = {}
 ) {
-  const componentName = config.heatmapMode
-    ? `TableRenderer-${config.heatmapMode}`
-    : 'TableRenderer'
+  // const componentName = config.heatmapMode
+  //   ? `TableRenderer-${config.heatmapMode}`
+  //   : 'TableRenderer'
     
   return defineComponent({
     name: 'TableRenderer', // componentName,

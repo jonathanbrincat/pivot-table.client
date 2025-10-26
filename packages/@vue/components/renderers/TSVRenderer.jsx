@@ -3,12 +3,8 @@ import { defineComponent } from 'vue'
 function makeRenderer(
   config = {}
 ) {
-  const componentName = config.mode
-    ? `TestRenderer-${config.mode}`
-    : 'TestRenderer'
-  
   return defineComponent({
-    name: 'TestRenderer', // componentName,
+    name: 'TSVRenderer', // componentName,
 
     props: {
       // JB: there are defaults in PivotData.defaultProps that should be transferred, however also duplication.
@@ -34,38 +30,17 @@ function makeRenderer(
         default: () => ({}),
       },
     },
-
-    setup(props) {
-      return {
-        props,
-      }
-    },
+    
+    setup(props) {},
 
     render() {
       return (
-        <div class="border-green-500 border-2 p-2">
-          <h1 class="text-4xl">Test wtf</h1>
-          {
-            (config.mode === 'FOO') && (
-              <h2>hello foo test</h2>
-            )
-          }
-
-          {
-            (config.mode === 'BAR') && (
-              <h2>hello bar test</h2>
-            )
-          }
-        </div>
+        <div>TSV Renderer (to be implemented)</div>
       )
-    },
+    }
   })
 }
 
 export default {
-  // Test1: TestRenderer,
-  Test2: makeRenderer(),
-  Test3: makeRenderer({ mode: 'FOO' }),
-  Test4: makeRenderer({ mode: 'BAR'}),
-  // Test5: <TestRenderer test={'FOO'} />,
+  TSV: makeRenderer(),
 }

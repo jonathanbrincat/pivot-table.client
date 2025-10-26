@@ -7,12 +7,12 @@ import '../../../@react/components/renderers/foobarRenderer.css'
 function makeRenderer(
   config = {}
 ) {
-  const componentName = config.mode
-    ? `FoobarRenderer-${config.mode}`
-    : 'FoobarRenderer'
+  // const componentName = config.mode
+  //   ? `FoobarRenderer-${config.mode}`
+  //   : 'FoobarRenderer'
   
   return defineComponent({
-    name: componentName,
+    name: 'FoobarRenderer', // componentName,
 
     props: {
       // JB: there are defaults in PivotData.defaultProps that should be transferred, however also duplication.
@@ -27,6 +27,8 @@ function makeRenderer(
       colOrder: String,
       derivedAttributes: Object,
 
+      data: Array,
+
       tableColorScaleGenerator: {
         type: Function,
         default: () => redColorScaleGenerator,
@@ -35,8 +37,6 @@ function makeRenderer(
         type: Object,
         default: () => ({}),
       },
-
-      data: Array,
     },
 
     setup(props) {
