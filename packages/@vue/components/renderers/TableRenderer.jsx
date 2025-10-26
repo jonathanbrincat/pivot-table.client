@@ -1,6 +1,6 @@
 import { defineComponent, computed, ref, watchEffect } from 'vue'
 import PivotData from '../../../@core/js/PivotData'
-import { redColorScaleGenerator, spanSize } from '../../../@core/js/ui'
+import { redColorScaleGenerator, spanSize } from '../../../@core/js/ui.ts'
 
 import '../../../@react/components/renderers/tableRenderer.css'
 
@@ -23,6 +23,9 @@ function makeRenderer(
     name: componentName,
 
     props: {
+      // Spread PivotData props
+      // ...PivotData.props,
+
       // JB: there are defaults in PivotData.defaultProps that should be transferred, however also duplication.
       aggregators: Object,
       cols: Array,
@@ -35,16 +38,17 @@ function makeRenderer(
       colOrder: String,
       derivedAttributes: Object,
 
+      data: Array,
+
       tableColorScaleGenerator: {
         type: Function,
-        default: () => redColorScaleGenerator,
+        // default: () => redColorScaleGenerator, // JB: I swear vue docs says you must return non-primitives with a factory function
+        default: redColorScaleGenerator,
       },
       tableOptions: {
         type: Object,
         default: () => ({}),
       },
-
-      data: Array,
     },
 
     setup(props) {
@@ -69,6 +73,13 @@ function makeRenderer(
 
       const grandTotalAggregator = ref(() => pivotData.value.getAggregator([], []))
 
+      let valueCellColors = ref(() => {})
+      let rowTotalColors = ref(() => {}) // JB: needs to be a reactive or else the closure will not work properly and get recaptured
+      let colTotalColors = ref(() => {})
+
+      const { tableColorScaleGenerator: colorScaleGenerator } = props
+      console.log('JB :: ', colorScaleGenerator)
+
       watchEffect(() => {
         pivotData.value = new PivotData(props)
 
@@ -78,66 +89,80 @@ function makeRenderer(
         colAttrs.value = pivotData.value.props.cols
 
         grandTotalAggregator.value = pivotData.value.getAggregator([], [])
+
+        if (config.heatmapMode) {
+          // const colorScaleGenerator = props.tableColorScaleGenerator
+          
+          const rowTotalValues = colKeys.value.map(x =>
+            pivotData.value.getAggregator([], x).value()
+          )
+          
+          rowTotalColors.value = colorScaleGenerator(rowTotalValues)
+          // rowTotalColors.value = redColorScaleGenerator(rowTotalValues)
+          
+          const colTotalValues = rowKeys.value.map(x =>
+            pivotData.value.getAggregator(x, []).value()
+          )
+          
+          // JB:: 3 issues; 1) the function assignment via props 2) the argument being passed need to be array of numbers 3) the param passed needs to be a number
+          // JB: the closure of min and max does not appear to be working; it goes stale after first assignment and doesn't get recaptured
+
+          colTotalColors.value = colorScaleGenerator(colTotalValues) // JB: => ui.ts redColorScaleGenerator()
+          // colTotalColors.value = redColorScaleGenerator(colTotalValues) // JB returns {"backgroundColor":"rgb(255,NaN,NaN)"}
+
+          if (config.heatmapMode === STATICS.heatmapMode.full) {
+            const allValues = []
+
+            rowKeys.value.map(r =>
+              colKeys.value.map(c =>
+                allValues.push(pivotData.value.getAggregator(r, c).value())
+              )
+            )
+
+            const colorScale = colorScaleGenerator(allValues)
+            // const colorScale = redColorScaleGenerator(allValues)
+
+            valueCellColors.value = (r, c, v) => colorScale(v)
+          }
+          else if (config.heatmapMode === STATICS.heatmapMode.row) {
+            const rowColorScales = {}
+
+            rowKeys.value.map(r => {
+              const rowValues = colKeys.value.map(x =>
+                pivotData.value.getAggregator(r, x).value()
+              )
+              rowColorScales[r] = colorScaleGenerator(rowValues)
+              // rowColorScales[r] = redColorScaleGenerator(rowValues)
+            })
+
+            valueCellColors.value = (r, c, v) => rowColorScales[r](v)
+          }
+          else if (config.heatmapMode === STATICS.heatmapMode.column) {
+            const colColorScales = {}
+
+            colKeys.value.map(c => {
+              const colValues = rowKeys.value.map(x =>
+                pivotData.value.getAggregator(x, c).value()
+              )
+              colColorScales[c] = colorScaleGenerator(colValues)
+              // colColorScales[c] = redColorScaleGenerator(colValues)
+            })
+
+            valueCellColors.value = (r, c, v) => colColorScales[c](v)
+          }
+        }
       })
 
-      let valueCellColors = () => {}
-      let rowTotalColors = () => {}
-      let colTotalColors = () => {}
-
-      if (config.heatmapMode) {
-        const colorScaleGenerator = props.tableColorScaleGenerator
-        console.log('JB :colorScaleGenerator: ', colorScaleGenerator)
-
-        const rowTotalValues = colKeys.value.map(x =>
-          pivotData.value.getAggregator([], x).value()
-        )
-
-        rowTotalColors = colorScaleGenerator(rowTotalValues)
-
+      // Create a computed property that returns a fresh function each time
+      const colTotalColors2 = computed(() => {
+        if (!config.heatmapMode || !rowKeys.value) return () => ({})
+        
         const colTotalValues = rowKeys.value.map(x =>
           pivotData.value.getAggregator(x, []).value()
         )
-
-        colTotalColors = colorScaleGenerator(colTotalValues)
-
-        if (config.heatmapMode === STATICS.heatmapMode.full) {
-          const allValues = []
-
-          rowKeys.value.map(r =>
-            colKeys.value.map(c =>
-              allValues.push(pivotData.value.getAggregator(r, c).value())
-            )
-          )
-
-          const colorScale = colorScaleGenerator(allValues)
-
-          valueCellColors = (r, c, v) => colorScale(v)
-        }
-        else if (config.heatmapMode === STATICS.heatmapMode.row) {
-          const rowColorScales = {}
-
-          rowKeys.value.map(r => {
-            const rowValues = colKeys.value.map(x =>
-              pivotData.value.getAggregator(r, x).value()
-            )
-            rowColorScales[r] = colorScaleGenerator(rowValues)
-          })
-
-          valueCellColors = (r, c, v) => rowColorScales[r](v)
-        }
-        else if (config.heatmapMode === STATICS.heatmapMode.column) {
-          const colColorScales = {}
-
-          colKeys.value.map(c => {
-            const colValues = rowKeys.value.map(x =>
-              pivotData.value.getAggregator(x, c).value()
-            )
-            colColorScales[c] = colorScaleGenerator(colValues)
-          })
-
-          valueCellColors = (r, c, v) => colColorScales[c](v)
-        }
-      }
+        
+        return colorScaleGenerator(colTotalValues)
+      })
 
       const getClickHandler =
         props.tableOptions && props.tableOptions.clickCallback
@@ -169,7 +194,7 @@ function makeRenderer(
           : null
       
       return  {
-        pivotData, rowKeys, colKeys, rowAttrs, colAttrs, grandTotalAggregator, getClickHandler, valueCellColors, rowTotalColors, colTotalColors
+        pivotData, rowKeys, colKeys, rowAttrs, colAttrs, grandTotalAggregator, getClickHandler, valueCellColors, rowTotalColors, colTotalColors,
       }
     },
 
@@ -307,9 +332,10 @@ function makeRenderer(
                         this.getClickHandler &&
                         this.getClickHandler(totalAggregator.value(), rowKey, [null])
                       }
-                      style={this.colTotalColors(totalAggregator.value())}
+                      style={this.colTotalColors(totalAggregator.value())} // JB:colTotalColors() broken
                     >
                       {totalAggregator.format(totalAggregator.value())}
+                      {/* {JSON.stringify(this.colTotalColors(totalAggregator.value()))} */}
                     </td>
                   </tr>
                 )
@@ -336,9 +362,10 @@ function makeRenderer(
                         this.getClickHandler &&
                         this.getClickHandler(totalAggregator.value(), [null], colKey)
                       }
-                      style={this.rowTotalColors(totalAggregator.value())}
+                      style={this.rowTotalColors(totalAggregator.value())} // JB: rowTotalColors() broken
                     >
                       {totalAggregator.format(totalAggregator.value())}
+                      {/* {JSON.stringify(this.rowTotalColors(totalAggregator.value()))} */}
                     </td>
                   )
                 })

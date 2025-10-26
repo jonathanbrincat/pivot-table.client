@@ -1,7 +1,7 @@
 <script setup lang="js">
 import { computed, ref, watchEffect } from 'vue'
 import PivotData from '../../../@core/js/PivotData'
-import { redColorScaleGenerator, spanSize } from '../../../@core/js/ui'
+import { redColorScaleGenerator, spanSize } from '../../../@core/js/ui.ts'
 
 const STATICS = {
   heatmapMode: {

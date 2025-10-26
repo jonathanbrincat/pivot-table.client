@@ -107,8 +107,8 @@ export default function PivotTableUI(props) {
     )
 
     // console.log('React :criterion: ', criterion)
-    console.log('React :axisX: ', axisX)
-    console.log('React :axisY: ', axisY)
+    // console.log('React :axisX: ', axisX)
+    // console.log('React :axisY: ', axisY)
   }, [axisX, axisY, dimensions])
 
   function parseDimensions() {

@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import PivotData from '../../../@core/js/PivotData'
-import { redColorScaleGenerator, spanSize } from '../../../@core/js/ui'
+import { redColorScaleGenerator, spanSize } from '../../../@core/js/ui.ts'
 
 import './tableRenderer.css'
 
@@ -33,7 +33,7 @@ function makeRenderer(
 
       if (config.heatmapMode) {
         const colorScaleGenerator = this.props.tableColorScaleGenerator
-
+        
         const rowTotalValues = colKeys.map(x =>
           pivotData.getAggregator([], x).value()
         )
@@ -43,6 +43,7 @@ function makeRenderer(
         const colTotalValues = rowKeys.map(x =>
           pivotData.getAggregator(x, []).value()
         )
+        
         colTotalColors = colorScaleGenerator(colTotalValues)
 
         if (config.heatmapMode === STATICS.heatmapMode.full) {
@@ -194,6 +195,7 @@ function makeRenderer(
               {
                 rowKeys.map(function(rowKey, i) {
                   const totalAggregator = pivotData.getAggregator(rowKey, [])
+                  // console.log('fuck :rowKey: ', totalAggregator)
                   return (
                     <tr key={`rowKeyRow${i}`}>
                       {
@@ -280,7 +282,7 @@ function makeRenderer(
                           getClickHandler &&
                           getClickHandler(totalAggregator.value(), [null], colKey)
                         }
-                        style={rowTotalColors(totalAggregator.value())}
+                        // style={rowTotalColors(totalAggregator.value())}
                       >
                         {totalAggregator.format(totalAggregator.value())}
                       </td>
