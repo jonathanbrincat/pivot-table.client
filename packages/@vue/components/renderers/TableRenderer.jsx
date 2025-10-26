@@ -16,16 +16,13 @@ function makeRenderer(
   config = {}
 ) {
   const componentName = config.heatmapMode
-    ? `PivotTableRenderer-${config.heatmapMode}`
-    : 'PivotTableRenderer'
+    ? `TableRenderer-${config.heatmapMode}`
+    : 'TableRenderer'
     
   return defineComponent({
-    name: componentName,
+    name: 'TableRenderer', // componentName,
 
     props: {
-      // Spread PivotData props
-      // ...PivotData.props,
-
       // JB: there are defaults in PivotData.defaultProps that should be transferred, however also duplication.
       aggregators: Object,
       cols: Array,
@@ -77,9 +74,6 @@ function makeRenderer(
       let rowTotalColors = ref(() => {}) // JB: needs to be a reactive or else the closure will not work properly and get recaptured
       let colTotalColors = ref(() => {})
 
-      const { tableColorScaleGenerator: colorScaleGenerator } = props
-      console.log('JB :: ', colorScaleGenerator)
-
       watchEffect(() => {
         pivotData.value = new PivotData(props)
 
@@ -91,7 +85,7 @@ function makeRenderer(
         grandTotalAggregator.value = pivotData.value.getAggregator([], [])
 
         if (config.heatmapMode) {
-          // const colorScaleGenerator = props.tableColorScaleGenerator
+          const { tableColorScaleGenerator: colorScaleGenerator } = props
           
           const rowTotalValues = colKeys.value.map(x =>
             pivotData.value.getAggregator([], x).value()
@@ -106,7 +100,6 @@ function makeRenderer(
           
           // JB:: 3 issues; 1) the function assignment via props 2) the argument being passed need to be array of numbers 3) the param passed needs to be a number
           // JB: the closure of min and max does not appear to be working; it goes stale after first assignment and doesn't get recaptured
-
           colTotalColors.value = colorScaleGenerator(colTotalValues) // JB: => ui.ts redColorScaleGenerator()
           // colTotalColors.value = redColorScaleGenerator(colTotalValues) // JB returns {"backgroundColor":"rgb(255,NaN,NaN)"}
 
@@ -120,7 +113,6 @@ function makeRenderer(
             )
 
             const colorScale = colorScaleGenerator(allValues)
-            // const colorScale = redColorScaleGenerator(allValues)
 
             valueCellColors.value = (r, c, v) => colorScale(v)
           }
@@ -132,7 +124,6 @@ function makeRenderer(
                 pivotData.value.getAggregator(r, x).value()
               )
               rowColorScales[r] = colorScaleGenerator(rowValues)
-              // rowColorScales[r] = redColorScaleGenerator(rowValues)
             })
 
             valueCellColors.value = (r, c, v) => rowColorScales[r](v)
@@ -145,7 +136,6 @@ function makeRenderer(
                 pivotData.value.getAggregator(x, c).value()
               )
               colColorScales[c] = colorScaleGenerator(colValues)
-              // colColorScales[c] = redColorScaleGenerator(colValues)
             })
 
             valueCellColors.value = (r, c, v) => colColorScales[c](v)
@@ -154,6 +144,7 @@ function makeRenderer(
       })
 
       // Create a computed property that returns a fresh function each time
+      /*
       const colTotalColors2 = computed(() => {
         if (!config.heatmapMode || !rowKeys.value) return () => ({})
         
@@ -163,6 +154,7 @@ function makeRenderer(
         
         return colorScaleGenerator(colTotalValues)
       })
+      */
 
       const getClickHandler =
         props.tableOptions && props.tableOptions.clickCallback
@@ -199,21 +191,23 @@ function makeRenderer(
     },
 
     render() {
+      const { colKeys, rowKeys, colAttrs, rowAttrs, pivotData, grandTotalAggregator, getClickHandler, valueCellColors, rowTotalColors, colTotalColors, } = this
+
       return (
         <table class="pvtTable">
           <thead>
             {
-              this.colAttrs.map((item, j) => {
+              colAttrs.map((item, j) => {
                 return (
                   <tr key={`colAttr${j}`}>
-                    {j === 0 && this.rowAttrs.length !== 0 && (
-                      <th colSpan={this.rowAttrs.length} rowSpan={this.colAttrs.length} />
+                    {j === 0 && rowAttrs.length !== 0 && (
+                      <th colSpan={rowAttrs.length} rowSpan={colAttrs.length} />
                     )}
 
                     <th class="pvtAxisLabel">{item}</th>
                     {
-                      this.colKeys.map((colKey, i) => {
-                        const x = spanSize(this.colKeys, i, j)
+                      colKeys.map((colKey, i) => {
+                        const x = spanSize(colKeys, i, j)
                         if (x === -1) {
                           return null
                         }
@@ -223,7 +217,7 @@ function makeRenderer(
                             class="pvtColLabel"
                             key={`colKey${i}`}
                             rowSpan={
-                              j === this.colAttrs.length - 1 && this.rowAttrs.length !== 0
+                              j === colAttrs.length - 1 && rowAttrs.length !== 0
                                 ? 2
                                 : 1
                             }
@@ -239,7 +233,7 @@ function makeRenderer(
                       <th
                         class="pvtTotalLabel"
                         rowSpan={
-                          this.colAttrs.length + (this.rowAttrs.length === 0 ? 0 : 1)
+                          colAttrs.length + (rowAttrs.length === 0 ? 0 : 1)
                         }
                       >
                         Totals
@@ -251,10 +245,10 @@ function makeRenderer(
             }
 
             {
-              this.rowAttrs.length !== 0 && (
+              rowAttrs.length !== 0 && (
                 <tr>
                   {
-                    this.rowAttrs.map((r, i) => {
+                    rowAttrs.map((r, i) => {
                       return (
                         <th class="pvtAxisLabel" key={`rowAttr${i}`}>
                           {r}
@@ -264,7 +258,7 @@ function makeRenderer(
                   }
                   
                   <th class="pvtTotalLabel">
-                    {this.colAttrs.length === 0 ? 'Totals' : null}
+                    {colAttrs.length === 0 ? 'Totals' : null}
                   </th>
                 </tr>
               )
@@ -273,13 +267,13 @@ function makeRenderer(
 
           <tbody>
             {
-              this.rowKeys.map((rowKey, i) => {
-                const totalAggregator = this.pivotData.getAggregator(rowKey, [])
+              rowKeys.map((rowKey, i) => {
+                const totalAggregator = pivotData.getAggregator(rowKey, [])
                 return (
                   <tr key={`rowKeyRow${i}`}>
                     {
                       rowKey.map((txt, j) => {
-                        const x = spanSize(this.rowKeys, i, j)
+                        const x = spanSize(rowKeys, i, j)
 
                         if (x === -1) {
                           return null
@@ -291,7 +285,7 @@ function makeRenderer(
                             key={`rowKeyLabel${i}-${j}`}
                             rowSpan={x}
                             colSpan={
-                              j === this.rowAttrs.length - 1 && this.colAttrs.length !== 0
+                              j === rowAttrs.length - 1 && colAttrs.length !== 0
                                 ? 2
                                 : 1
                             }
@@ -303,18 +297,18 @@ function makeRenderer(
                     }
 
                     {
-                      this.colKeys.map((colKey, j) => {
-                        const aggregator = this.pivotData.getAggregator(rowKey, colKey)
+                      colKeys.map((colKey, j) => {
+                        const aggregator = pivotData.getAggregator(rowKey, colKey)
 
                         return (
                           <td
                             class="pvtVal"
                             key={`pvtVal${i}-${j}`}
                             onClick={
-                              this.getClickHandler &&
-                              this.getClickHandler(aggregator.value(), rowKey, colKey)
+                              getClickHandler &&
+                              getClickHandler(aggregator.value(), rowKey, colKey)
                             }
-                            style={this.valueCellColors(
+                            style={valueCellColors(
                               rowKey,
                               colKey,
                               aggregator.value()
@@ -329,13 +323,12 @@ function makeRenderer(
                     <td
                       class="pvtTotal"
                       onClick={
-                        this.getClickHandler &&
-                        this.getClickHandler(totalAggregator.value(), rowKey, [null])
+                        getClickHandler &&
+                        getClickHandler(totalAggregator.value(), rowKey, [null])
                       }
-                      style={this.colTotalColors(totalAggregator.value())} // JB:colTotalColors() broken
+                      style={colTotalColors(totalAggregator.value())}
                     >
                       {totalAggregator.format(totalAggregator.value())}
-                      {/* {JSON.stringify(this.colTotalColors(totalAggregator.value()))} */}
                     </td>
                   </tr>
                 )
@@ -345,27 +338,26 @@ function makeRenderer(
             <tr>
               <th
                 class="pvtTotalLabel"
-                colSpan={this.rowAttrs.length + (this.colAttrs.length === 0 ? 0 : 1)}
+                colSpan={rowAttrs.length + (colAttrs.length === 0 ? 0 : 1)}
               >
                 Totals
               </th>
 
               {
-                this.colKeys.map((colKey, i) => {
-                  const totalAggregator = this.pivotData.getAggregator([], colKey)
+                colKeys.map((colKey, i) => {
+                  const totalAggregator = pivotData.getAggregator([], colKey)
 
                   return (
                     <td
                       class="pvtTotal"
                       key={`total${i}`}
                       onClick={
-                        this.getClickHandler &&
-                        this.getClickHandler(totalAggregator.value(), [null], colKey)
+                        getClickHandler &&
+                        getClickHandler(totalAggregator.value(), [null], colKey)
                       }
-                      style={this.rowTotalColors(totalAggregator.value())} // JB: rowTotalColors() broken
+                      style={rowTotalColors(totalAggregator.value())}
                     >
                       {totalAggregator.format(totalAggregator.value())}
-                      {/* {JSON.stringify(this.rowTotalColors(totalAggregator.value()))} */}
                     </td>
                   )
                 })
@@ -373,12 +365,12 @@ function makeRenderer(
 
               <td
                 onClick={
-                  this.getClickHandler &&
-                  this.getClickHandler(this.grandTotalAggregator.value(), [null], [null])
+                  getClickHandler &&
+                  getClickHandler(grandTotalAggregator.value(), [null], [null])
                 }
                 class="pvtGrandTotal"
               >
-                {this.grandTotalAggregator.format(this.grandTotalAggregator.value())}
+                {grandTotalAggregator.format(grandTotalAggregator.value())}
               </td>
             </tr>
           </tbody>

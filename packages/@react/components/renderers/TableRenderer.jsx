@@ -282,7 +282,7 @@ function makeRenderer(
                           getClickHandler &&
                           getClickHandler(totalAggregator.value(), [null], colKey)
                         }
-                        // style={rowTotalColors(totalAggregator.value())}
+                        style={rowTotalColors(totalAggregator.value())}
                       >
                         {totalAggregator.format(totalAggregator.value())}
                       </td>
