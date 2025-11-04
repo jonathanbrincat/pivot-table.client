@@ -10,6 +10,22 @@ import { Bar } from 'react-chartjs-2'
 
 ChartJS.register(Tooltip, Legend, CategoryScale, LinearScale, BarElement, BarController)
 
+const data = {
+  labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+  datasets: [
+    {
+      label: 'Dataset 1',
+      data: [100, 200, 300, 400, 500, 600, 700],
+      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+    },
+    {
+      label: 'Dataset 2',
+      data: [200, 300, 400, 500, 600, 700, 800],
+      backgroundColor: 'rgba(53, 162, 235, 0.5)',
+    },
+  ],
+};
+
 const OPTIONS = {
   responsive: true,
   indexAxis: 'y',
@@ -50,7 +66,7 @@ function makeRenderer(
         datumKeys.push([])
       }
 
-      let fullAggName = this.props.aggregatorName;
+      let fullAggName = this.props.aggregatorName
 
       const dataset = traceKeys.map((traceKey, i) => {
         const values = []
@@ -80,13 +96,16 @@ function makeRenderer(
         return trace
       })
 
-      const data = {
-        labels: dataset[0].labels,
-        datasets: [...dataset],
-      }
+      // const data = {
+      //   labels: dataset[0].labels,
+      //   datasets: [...dataset],
+      // }
+
+      console.log('JB :: ', data)
       
       return (
         <>
+          {/* JB :: throws error => Warning: Invalid hook call. */}
           <Bar data={data} options={OPTIONS} />
         </>
       )
@@ -97,7 +116,7 @@ function makeRenderer(
     onRendererUpdate: PropTypes.func,
   })
 
-  return Renderer;
+  return Renderer
 }
 
 export default function createChartjsRenderer(config) {

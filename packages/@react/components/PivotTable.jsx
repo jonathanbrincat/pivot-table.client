@@ -1,7 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import PivotData from '../../@core/js/PivotData'
-import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer } from './renderers'
+import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer, createPlotlyRenderer, createChartjsRenderer } from './renderers'
+// import createPlotlyComponent from 'react-plotly.js/factory'
+import { colors as palette  } from '../../../common/js/constants'
+
+// const PlotlyComponent = createPlotlyComponent(window.Plotly) // JB: create instance of Plotly
 
 /* eslint-disable react/prop-types */
 // eslint can't see inherited propTypes!
@@ -27,8 +31,14 @@ PivotTable.propTypes = {
 PivotTable.defaultProps = {
   ...PivotData.defaultProps,
   rendererName: 'Table',
-  // renderers: {...TableRenderer, ...TSVRenderer, ...FoobarRenderer},
-  renderers: { ...TableRenderer, ...FoobarRenderer, ...TestRenderer },
+  renderers: {
+    ...TableRenderer,
+    ...FoobarRenderer,
+    ...TestRenderer,
+    ...TSVRenderer,
+    // ...createPlotlyRenderer(PlotlyComponent),
+    ...createChartjsRenderer({ palette }),
+  },
 }
 
 export default PivotTable

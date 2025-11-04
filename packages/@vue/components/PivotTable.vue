@@ -1,7 +1,7 @@
 <script setup lang="js">
 import { computed } from 'vue'
 import PivotData from '../../@core/js/PivotData'
-// import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer } from './renderers'
+import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer } from './renderers'
 
 const props = defineProps(
   

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import PivotTableUI from '../../../packages/@react'
-import {TableRenderer, TSVRenderer, createChartjsRenderer}  from '../../../packages/@react/components/renderers'
-import {aggregators, aggregatorTemplates }  from '../../../packages/@core/js/aggregators'
+// import { TableRenderer, TSVRenderer, createChartjsRenderer}  from '../../../packages/@react/components/renderers'
+// import {aggregators, aggregatorTemplates }  from '../../../packages/@core/js/aggregators'
 import { getData } from '../../../common/js/services/dataService'
 import {isEmptyObject}  from '../../../common/js/utility'
 import STATIC, { colors as palette  } from '../../../common/js/constants'
@@ -54,7 +54,7 @@ export default function App({
         data={dataset} // REQUIRED - everything else is optional
         // renderers={{
         // 	...TableRenderer,
-		// 	...TSVRenderer,
+				// 	...TSVRenderer,
         // 	...createChartjsRenderer({ palette }),
         // }}
         // aggregators={{

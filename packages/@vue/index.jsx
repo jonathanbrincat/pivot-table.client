@@ -21,6 +21,7 @@ export default defineComponent({
       aggregators: {
         type: Object,
         default: () => aggregators,
+        // default: aggregators,
       },
       cols: {
         type: Array,
@@ -67,6 +68,7 @@ export default defineComponent({
       renderers: {
         type: Object,
         default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer }),
+        // default: () => ({}),
       },
 
       hiddenAttributes: {
@@ -222,11 +224,11 @@ export default defineComponent({
       return results
     }
 
-    /*
-    const numValsAllowed = props.aggregators[activeAggregator]([])().numInputs || 0
+    console.log('JB :props.aggregators: ', props.aggregators)
+    console.log('JB :activeAggregator: ', activeAggregator.value)
+    const numValsAllowed = computed(() => props.aggregators[activeAggregator.value]([])().numInputs || 0)
 
-    const aggregatorCellOutlet = props.aggregators[activeAggregator]([])().outlet
-    */
+    const aggregatorCellOutlet = computed(() => props.aggregators[activeAggregator.value]([])().outlet)
 
     function setAllValuesInFilter(attribute, values) {
       const { [attribute]: _discard_, ...rest } = filters.value // JB: pretty suure destructuring reactive refs is a no no in vue
@@ -279,7 +281,7 @@ export default defineComponent({
           class="dimension__list"
           tag="ul"
           list={items}
-          setList={onSortableChangeHandler}
+          // setList={onSortableChangeHandler}
           group="pivot__dimension"
           ghostClass="sortable--ghost"
           chosenClass="sortable--chosen"
@@ -288,34 +290,26 @@ export default defineComponent({
           preventOnFilter={false}
           item-key="name"
         >
-          {/* {
-            items.map(
-              (item, index) => {
-                return (
-                  {{
-                    item: ({ element }) => (
-                      <Dimension
-                        item={element}
-                        name={item.name}
-                        key={`${item.id}-${index}`}
-                        attrValues={dimensions[item.name]}
-                        valueFilter={filters[item.name] || {}}
-                        sorter={getSort(props.sorters, item.name)}
-                        menuLimit={props.menuLimit}
-                        setAllValuesInFilter={setAllValuesInFilter}
-                        addValuesToFilter={addValuesToFilter}
-                        removeValuesFromFilter={removeValuesFromFilter}
-                      />
-                    )
-                  }}
-                )
-              }
-            )
-          } */}
+          {{
+            item: ({ element: item }, index) => (
+              <Dimension
+                item={element}
+                name={item.name}
+                // key={`${item.id}-${index}`}
+                attrValues={dimensions.value[item.name]}
+                valueFilter={filters.value[item.name] || {}}
+                sorter={getSort(props.sorters, item.name)}
+                menuLimit={props.menuLimit}
+                setAllValuesInFilter={setAllValuesInFilter}
+                addValuesToFilter={addValuesToFilter}
+                removeValuesFromFilter={removeValuesFromFilter}
+              />
+            ),
+          }}
         </Draggable>
       )
       // console.log(' :: ',temp)
-  
+      
       return temp
     }
 
@@ -326,7 +320,9 @@ export default defineComponent({
             <select
               class="ui__select"
               value={activeRenderer.value}
-              onChange={(event) => activeRenderer.value = event.target.value}
+              onChange={
+                (event) => activeRenderer.value = event.target.value
+              }
             >
               {
                 Object.keys(props.renderers).map(
@@ -342,7 +338,9 @@ export default defineComponent({
             <select
               class="ui__select"
               value={activeAggregator.value}
-              onChange={(event) => activeAggregator.value = event.target.value}
+              onChange={
+                (event) => activeAggregator.value = event.target.value
+              }
             >
               {
                 Object.keys(props.aggregators).map(
@@ -353,17 +351,17 @@ export default defineComponent({
               }
             </select>
 
-            {/* {new Array(numValsAllowed).fill().map((n, index) => [
+            {new Array(numValsAllowed.value).fill().map((n, index) => [
               <select
                 class="ui__select"
-                value={activeDimensions[index]}
+                value={activeDimensions.value[index]}
                 onChange={
-                  (event) => activeDimensions = activeDimensions.toSpliced(index, 1, event.target.value)
+                  (event) => activeDimensions.value = activeDimensions.value.toSpliced(index, 1, event.target.value)
                 }
                 key={`dimension-${index}`}
               >
                 {
-                  Object.keys(dimensions).map(
+                  Object.keys(dimensions.value).map(
                     (item, index) => (
                       !props.hiddenAttributes.includes(item) &&
                       !props.hiddenFromAggregators.includes(item) &&
@@ -374,15 +372,15 @@ export default defineComponent({
               </select>
             ])}
 
-            {aggregatorCellOutlet && aggregatorCellOutlet(props.data)} */}
+            {aggregatorCellOutlet.value && aggregatorCellOutlet.value(props.data)}
           </aside>
 
           {/* JB: other than returning basic html strings(and string interpolation) with a function using v-html, anything more complex needs to be done outside of <template> with a render function */}
           <div class="pivot__criterion">
-            {/*
+            {/*  
             {
-              !!criterion?.length && createCluster(
-                criterion,
+              !!criterion?.value.length && createCluster(
+                criterion.value,
                 (collection) => criterion.value = collection,
               )
             }
@@ -410,8 +408,8 @@ export default defineComponent({
                   <Dimension
                     item={item}
                     name={item.name}
-                    attrValues={dimensions[item.name]}
-                    valueFilter={filters[item.name] || {}}
+                    attrValues={dimensions.value[item.name]}
+                    valueFilter={filters.value[item.name] || {}}
                     sorter={getSort(props.sorters, item.name)}
                     menuLimit={props.menuLimit}
                     setAllValuesInFilter={setAllValuesInFilter}
@@ -457,8 +455,8 @@ export default defineComponent({
                     <Dimension
                       item={item}
                       name={item.name}
-                      attrValues={dimensions[item.name]}
-                      valueFilter={filters[item.name] || {}}
+                      attrValues={dimensions.value[item.name]}
+                      valueFilter={filters.value[item.name] || {}}
                       sorter={getSort(props.sorters, item.name)}
                       menuLimit={props.menuLimit}
                       setAllValuesInFilter={setAllValuesInFilter}
@@ -501,8 +499,8 @@ export default defineComponent({
                   <Dimension
                     item={item}
                     name={item.name}
-                    attrValues={dimensions[item.name]}
-                    valueFilter={filters[item.name] || {}}
+                    attrValues={dimensions.value[item.name]}
+                    valueFilter={filters.value[item.name] || {}}
                     sorter={getSort(props.sorters, item.name)}
                     menuLimit={props.menuLimit}
                     setAllValuesInFilter={setAllValuesInFilter}
@@ -566,9 +564,6 @@ export default defineComponent({
           </div>
 
           <article class="pivot__output">
-            {/* <p>{rows = rows}</p>
-            <p>{cols = cols}</p> */}
-
             <PivotTable
               data={props.data}
               renderers={props.renderers}
@@ -581,6 +576,9 @@ export default defineComponent({
               colOrder={sortByColumn.value}
               vals={props.vals}
               valueFilter={filters.value}
+              plotlyOptions={props.plotlyOptions}
+              plotlyConfig={props.plotlyConfig}
+              tableOptions={props.tableOptions}
             />
           </article>
         </div>
