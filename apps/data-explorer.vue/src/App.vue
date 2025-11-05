@@ -16,10 +16,6 @@ const props = defineProps(
       type: String,
       required: true,
     },
-    taxonomy: {
-      type: Object,
-      default: () => ({ questions:[], key_variables: [] }),
-    },
   }
 )
 
@@ -28,9 +24,8 @@ const activeRenderer = ref(STATIC.RENDERER.table)
 
 onMounted(async () => {
   try {
-    const test = await getData(props?.uid)
-    console.log('DATA LOADED', test)
-    dataset.value = test
+    const data = await getData(props?.uid)
+    dataset.value = data
   } catch (error) {
     console.log('Something went wrong retrieving the data from the endpoint :: ', error)
   }
@@ -41,8 +36,8 @@ onMounted(async () => {
   <section className="pivot-table">
     <PivotTableUI
       :data="dataset"
-      :cols="['Age', 'Gender']"
-      :rows="['What brands of treats and toys do you usually buy for your pet']"
+      :cols="['Party Size']"
+      :rows="['Payer Gender']"
       :rendererName="activeRenderer"
     />
     <!-- v-bind="options" -->

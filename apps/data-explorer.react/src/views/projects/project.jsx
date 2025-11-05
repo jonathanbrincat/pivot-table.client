@@ -1,24 +1,16 @@
 import { useLoaderData } from 'react-router-dom'
 import App from '../../App'
-import { getTaxonomy } from '../../../../../common/js/services/dataService'
 
 export async function loader({ params }) {
-	const preflight = await getTaxonomy(params.projectId)
+	// JB: former getTaxonomy() preload (SB specific requirement for UI) and handler redundant
 
-	if (!preflight) {
-		throw new Response('', {
-			status: 404,
-			statusText: 'Not Found',
-		})
-	}	
-
-	return { uid: params.projectId, preflight }
+	return { uid: params.projectId }
 }
 
 export default function Project() {
-	const { uid, preflight } = useLoaderData()
+	const { uid } = useLoaderData()
 
 	return (
-		<App uid={uid} taxonomy={preflight} />
+		<App uid={uid} />
 	)
 }

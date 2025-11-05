@@ -9,21 +9,15 @@ import STATIC, { colors as palette  } from '../../../common/js/constants'
 
 import './app.css'
 
-const options = {
-	aggregatorName: STATIC.AGGREGATOR.uniqueCountOfGrandTotal,
-	unusedOrientationCutoff: Infinity,
-}
+// const options = {
+// 	aggregatorName: STATIC.AGGREGATOR.uniqueCountOfGrandTotal,
+// 	unusedOrientationCutoff: Infinity,
+// }
 
 export default function App({
 	uid = '',
-	taxonomy = { questions:[], key_variables: [] }
 }) {
-	// const { uid, taxonomy: { questions, key_variables } } = props
-
 	const [dataset, setDataset] = useState([])
-
-	const [question, setQuestion] = useState({}) // The selected question => singular
-	const [keyVariableCollection, setKeyVariableCollection] = useState([]) // The selected key variables => multiples
 
 	const [questionFilters, setQuestionFilters] = useState([])
 
@@ -31,15 +25,11 @@ export default function App({
 
 	const [activeRenderer, setActiveRenderer] = useState(STATIC.RENDERER.table)
 
-	/**
-	 * Retrieve data from API endpoint
-	 */
 	useEffect(() => {
 		async function load() {
 			try {
-        const test = await getData(uid)
-        // console.log(test)
-				setDataset(test)
+        const data = await getData(uid)
+				setDataset(data)
 			} catch (error) {
 				console.log('Something went wrong retrieving the data from the endpoint :: ', error)
 			}
@@ -61,22 +51,11 @@ export default function App({
         // 	...aggregators,
         // }}
 
-        // cols={keyVariableCollection.map(({ label }) => label).sort()}
-        // rows={!isEmptyObject(question) ? [question.label] : []}
-        cols={['Age', 'Gender']}
-        rows={['What brands of treats and toys do you usually buy for your pet']}
-
+        cols={['Party Size']}
+        rows={['Payer Gender']}
         rendererName={activeRenderer}
-        // valueFilter={
-        // 	!isEmptyObject(question) ? {
-        // 		[question.label]: questionFilters.reduce(
-        // 			(obj, item) => Object.assign(obj, { [item]: true })
-        // 			, {}),
-        // 		...keyVariablesFilters,
-        // 	} : {}
-        // }
 
-        {...options}
+        // {...options}
       />
     </section>
 	)
@@ -84,5 +63,4 @@ export default function App({
 
 App.propTypes = {
 	uid: PropTypes.string.isRequired,
-	taxonomy: PropTypes.objectOf(PropTypes.array),
 }
