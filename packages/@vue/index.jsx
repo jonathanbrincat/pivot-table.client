@@ -2,9 +2,9 @@ import { defineComponent, ref, computed, watch, watchEffect } from 'vue'
 import Draggable from 'vuedraggable'
 import Dimension from './components/Dimension'
 import PivotTable from './components/PivotTable.vue'
-import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer } from './components/renderers'
-import { aggregators } from '../@core/js/aggregators'
+import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer, createPlotlyRenderer, createChartjsRenderer } from './components/renderers'
 import PivotData from '../@core/js/PivotData'
+import { aggregators } from '../@core/js/aggregators'
 import { sortAs, getSort } from '../@core/js/utilities'
 import { sortBy } from '../@core/js/constants'
 
@@ -21,7 +21,7 @@ export default defineComponent({
       aggregators: {
         type: Object,
         default: () => aggregators,
-        // default: aggregators,
+        //  default: () => ({}),
       },
       cols: {
         type: Array,
@@ -67,7 +67,7 @@ export default defineComponent({
       },
       renderers: {
         type: Object,
-        default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer }),
+        default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer, ...TSVRenderer, }),
         // default: () => ({}),
       },
 
@@ -224,11 +224,13 @@ export default defineComponent({
       return results
     }
 
-    console.log('JB :props.aggregators: ', props.aggregators)
-    console.log('JB :activeAggregator: ', activeAggregator.value)
-    const numValsAllowed = computed(() => props.aggregators[activeAggregator.value]([])().numInputs || 0)
+    // console.log('JB :props.aggregators: ', props.aggregators)
+    // console.log('JB :activeAggregator: ', activeAggregator.value)
+    // const numValsAllowed = computed(() => props.aggregators[activeAggregator.value]([])().numInputs || 0)
+    const numValsAllowed = computed(() => 0)
 
-    const aggregatorCellOutlet = computed(() => props.aggregators[activeAggregator.value]([])().outlet)
+    // const aggregatorCellOutlet = computed(() => props.aggregators[activeAggregator.value]([])().outlet)
+    const aggregatorCellOutlet = computed(() => (() => {}))
 
     function setAllValuesInFilter(attribute, values) {
       const { [attribute]: _discard_, ...rest } = filters.value // JB: pretty suure destructuring reactive refs is a no no in vue
@@ -579,9 +581,9 @@ export default defineComponent({
               colOrder={sortByColumn.value}
               vals={props.vals}
               valueFilter={filters.value}
-              plotlyOptions={props.plotlyOptions}
-              plotlyConfig={props.plotlyConfig}
-              tableOptions={props.tableOptions}
+              // plotlyOptions={props.plotlyOptions}
+              // plotlyConfig={props.plotlyConfig}
+              // tableOptions={props.tableOptions}
             />
           </article>
         </div>

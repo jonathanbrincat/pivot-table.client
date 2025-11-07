@@ -3,9 +3,9 @@ import { ref, computed, watch, watchEffect } from 'vue'
 import Draggable from 'vuedraggable'
 import Dimension from './components/Dimension'
 import PivotTable from './components/PivotTable.vue'
-import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer } from './components/renderers'
-import { aggregators } from '../@core/js/aggregators'
+import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer, createPlotlyRenderer, createChartjsRenderer } from './components/renderers'
 import PivotData from '../@core/js/PivotData'
+import { aggregators } from '../@core/js/aggregators'
 import { sortAs, getSort } from '../@core/js/utilities'
 import { sortBy } from '../@core/js/constants'
 
@@ -17,6 +17,7 @@ const props = defineProps(
     aggregators: {
       type: Object,
       default: () => aggregators,
+      // default: () => ({}),
     },
     cols: {
       type: Array,
@@ -62,7 +63,8 @@ const props = defineProps(
     },
     renderers: {
       type: Object,
-      default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer }),
+      default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer, ...TSVRenderer, }),
+      // default: () => ({}),
     },
 
     hiddenAttributes: {
