@@ -1,5 +1,6 @@
-import { defineComponent, ref } from 'vue'
-import './dimension.css'
+import { defineComponent, ref, watch } from 'vue'
+import '../../@react/components/dimension.css'
+// import './dimension.css'
 
 const Dimension = defineComponent({
   props: {
@@ -18,6 +19,9 @@ const Dimension = defineComponent({
     isIndeterminate: {
       type: Boolean,
       default: false,
+    },
+    name:{
+      type: String,
     },
     setAllValuesInFilter: {
       required: true,
@@ -39,6 +43,24 @@ const Dimension = defineComponent({
     const filterText = ref('')
     const isAllFilters = ref(true)
 
+    watch([isAllFilters], (newValue, oldValue) => {
+      if (props?.attrValues) {
+
+        if (isAllFilters.value) {
+          props.removeValuesFromFilter(
+            props.name,
+            Object.keys(props?.attrValues)
+          )
+        }
+        else {
+          props.addValuesToFilter(
+            props.name,
+            Object.keys(props?.attrValues)
+          )
+        }
+      }
+    })
+
     function matchesFilter(filters) {
       return filters
         .toLowerCase()
@@ -46,7 +68,7 @@ const Dimension = defineComponent({
         .includes(filterText.value.toLowerCase().trim())
     }
 
-    function toggleValue(value) {
+    function toggleValue(value) {      
       if (value in props.valueFilter) {
         props.removeValuesFromFilter(props.name, [value])
       } else {
@@ -76,10 +98,7 @@ const Dimension = defineComponent({
       return (
         <div class="dimension__dropdown">
           <header class="dimension__dropdown-header">
-            <button
-              class="dimension__dropdown-close"
-              onClick={() => isOpen.value = false}
-            >&#10799;</button>
+            <button class="dimension__dropdown-close" onClick={() => isOpen.value = false}>&#10799;</button>
             
             <h4>{props.name}</h4>
           </header>
@@ -92,7 +111,7 @@ const Dimension = defineComponent({
                 type="text"
                 class="control__filters-search"
                 placeholder="Filter values"
-                value={filterText}
+                value={filterText.value}
                 onChange={event => filterText.value = event.target.value}
               />
 
@@ -100,7 +119,7 @@ const Dimension = defineComponent({
                 <input
                   type="checkbox"
                   ref={($input) => { if ($input) $input.indeterminate = props.isIndeterminate }}
-                  checked={isAllFilters}
+                  checked={isAllFilters.value}
                   onChange={(event) => isAllFilters.value = event.target.checked}
                 />
                 <span>Select All</span>
@@ -136,9 +155,9 @@ const Dimension = defineComponent({
                           : ''
 
     return () => (
-      <li class="dimension__list-item sortable">
-        <div class="pivot__dimension">
-          <span>{props.item.name}</span>
+      <li class="dimension__list-item sortable" data-id={props.name}>
+        <div class={`pivot__dimension ${filteredClass}`}>
+          <span>{props.name}</span>
           <button
             class="dimension__dropdown-toggle"
             onClick={toggleFilterPane.bind(this)}

@@ -7,6 +7,7 @@ import './dimension.css'
 // eslint can't see inherited propTypes!
 
 export default function Dimension(props = {
+  name: '',
   attrValues: {},
   valueFilter: {},
   isIndeterminate: false,
@@ -40,7 +41,7 @@ export default function Dimension(props = {
       .includes(filterText.toLowerCase().trim())
   }
 
-  function toggleValue(value) {
+  function toggleValue(value) {    
     if (value in props.valueFilter) {
       props.removeValuesFromFilter(props.name, [value])
     } else {

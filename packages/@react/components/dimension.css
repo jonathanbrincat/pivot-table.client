@@ -44,7 +44,6 @@
   }
 
 .pivot__dimension > span {
-  line-height: 1;
   display: block;
   overflow-x: hidden;
   text-overflow: ellipsis;

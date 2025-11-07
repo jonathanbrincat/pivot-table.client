@@ -252,7 +252,7 @@ function addValuesToFilter(attribute, values) {
     return acc
   }, filters.value)
 
-  filters.value = { ...filters, ...collection }
+  filters.value = { ...filters.value, ...collection }
 }
 
 function removeValuesFromFilter(attribute, values) {
@@ -264,10 +264,8 @@ function removeValuesFromFilter(attribute, values) {
     return acc
   }, filters.value)
 
-  filters.value = { ...filters, ...collection }
+  filters.value = { ...filters.value, ...collection }
 }
-
-function createCluster(items, onSortableChangeHandler) {}
 </script>
 
 <template>
@@ -496,5 +494,6 @@ function createCluster(items, onSortableChangeHandler) {}
 </template>
 
 <style>
-@import './index.css';
+/* @import './index.css'; */
+@import '../@react/index.css';
 </style>

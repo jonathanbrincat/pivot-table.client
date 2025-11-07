@@ -8,7 +8,8 @@ import PivotData from '../@core/js/PivotData'
 import { sortAs, getSort } from '../@core/js/utilities'
 import { sortBy } from '../@core/js/constants'
 
-import './index.css'
+// import './index.css'
+import '../@react/index.css'
 
 export default defineComponent({
   name: 'PivotUI',
@@ -242,6 +243,7 @@ export default defineComponent({
         return acc
       }, rest)
 
+      // JB: vue version doesn't actually need this to work
       filters.value = { ...filters.value, ...collection }
     }
 
@@ -256,7 +258,8 @@ export default defineComponent({
         return acc
       }, filters.value)
 
-      filters.value = { ...filters, ...collection }
+      // JB: vue version doesn't actually need this to work
+      filters.value = { ...filters.value, ...collection }
     }
 
     function removeValuesFromFilter(attribute, values) {
@@ -268,7 +271,8 @@ export default defineComponent({
         return acc
       }, filters.value)
 
-      filters.value = { ...filters, ...collection }
+      // JB: vue version doesn't actually need this to work
+      filters.value = { ...filters.value, ...collection }
     }
 
     function createCluster(items, onSortableChangeHandler) {

@@ -6,14 +6,65 @@ import PivotTable from './components/PivotTable'
 import PivotData from '../@core/js/PivotData'
 import { sortAs, getSort } from '../@core/js/utilities'
 import { sortBy } from '../@core/js/constants'
+import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer, createPlotlyRenderer, createChartjsRenderer } from './components/renderers'
+import { colors as palette  } from '../../common/js/constants'
 
 import './index.css'
+
+// JB: defaultProps to be deprecated in React
+PivotTableUI.defaultProps = Object.assign(
+  {},
+  PivotTable.defaultProps,
+  {
+    hiddenAttributes: [],
+    hiddenFromAggregators: [],
+    hiddenFromDragDrop: [],
+    menuLimit: 500,
+    rows: [],
+    cols: [],
+  }
+)
+
+// console.log('JB :1: ', PivotTable.defaultProps)
+// console.log('JB :2: ', PivotTableUI.defaultProps)
+
+// const test = {
+//   // ...PivotTable.defaultProps,
+//   rendererName:'Table',
+//   renderers: {
+//     ...TableRenderer,
+//     ...FoobarRenderer,
+//     ...TestRenderer,
+//     ...TSVRenderer,
+//     // ...createPlotlyRenderer(PlotlyComponent),
+//     ...createChartjsRenderer({ palette }),
+//   },
+
+//   hiddenAttributes: [],
+//   hiddenFromAggregators: [],
+//   hiddenFromDragDrop: [],
+//   menuLimit: 500,
+//   rows: [],
+//   cols: [],
+// }
+
+// console.log('JB :test: ', test)
 
 /* eslint-disable react/prop-types */
 // eslint can't see inherited propTypes!
 
 // export default function PivotTableUI({
 //   // ...PivotTable.defaultProps,
+//   rendererName = 'Table',
+//   renderers = {
+//     ...TableRenderer,
+//     ...FoobarRenderer,
+//     ...TestRenderer,
+//     ...TSVRenderer,
+//     // ...createPlotlyRenderer(PlotlyComponent),
+//     ...createChartjsRenderer({ palette }),
+//   },
+
 //   hiddenAttributes = [],
 //   hiddenFromAggregators = [],
 //   hiddenFromDragDrop = [],
@@ -27,6 +78,7 @@ export default function PivotTableUI(props) {
   //   ...PivotTable.defaultProps,  // Merge PivotTable's defaultProps
   //   ...props,                    // Overwrite with any incoming props
   // }
+  // console.log('JB :props: ', props)
 
   const [dimensions, setDimensions] = useState({})
 
@@ -417,19 +469,5 @@ PivotTableUI.propTypes = Object.assign(
     hiddenFromAggregators: PropTypes.arrayOf(PropTypes.string),
     hiddenFromDragDrop: PropTypes.arrayOf(PropTypes.string),
     menuLimit: PropTypes.number,
-  }
-)
-
-// JB: defaultProps to be deprecated in React
-PivotTableUI.defaultProps = Object.assign(
-  {},
-  PivotTable.defaultProps,
-  {
-    hiddenAttributes: [],
-    hiddenFromAggregators: [],
-    hiddenFromDragDrop: [],
-    menuLimit: 500,
-    rows: [],
-    cols: [],
   }
 )
