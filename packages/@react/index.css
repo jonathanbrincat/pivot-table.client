@@ -42,47 +42,49 @@
   max-width: 100%;
   margin: 1rem 0;
 }
-  .pivot__renderer {
-    grid-area: renderer;
 
-    display: flex;
-    flex-direction: column;
-  }
+.pivot__renderer {
+  grid-area: renderer;
 
-  .pivot__aggregator {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    grid-area: aggregator;
-  }
-    .pivot__aggregator .ui__select:not(:first-of-type) {
-      margin-left: 18px;
-    }
+  display: flex;
+  flex-direction: column;
+}
 
-  .pivot__criterion {
-    background-color: var(--swatch-neutral);
-    grid-area: criterion;
-    padding: 8px;
-  }
+.pivot__aggregator {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  grid-area: aggregator;
+}
 
-  .pivot__axis {
-    background: var(--swatch-dark);
-    padding: 8px;
-  }
+.pivot__aggregator .ui__select:not(:first-of-type) {
+  margin-left: 18px;
+}
 
-  .pivot__axis-x {
-    grid-area: axisX;
-  }
+.pivot__criterion {
+  background-color: var(--swatch-neutral);
+  grid-area: criterion;
+  padding: 8px;
+}
 
-  .pivot__axis-y {
-    grid-area: axisY;
-    min-width: 100px;
-  }
+.pivot__axis {
+  background: var(--swatch-dark);
+  padding: 8px;
+}
 
-  .pivot__output {
-    grid-area: output;
-    overflow-x: auto;
-  }
+.pivot__axis-x {
+  grid-area: axisX;
+}
+
+.pivot__axis-y {
+  grid-area: axisY;
+  min-width: 100px;
+}
+
+.pivot__output {
+  grid-area: output;
+  overflow-x: auto;
+}
 
 /*
 * Pivot Table UI / SortBy
@@ -94,80 +96,81 @@
   justify-content: flex-end;
   grid-area: sortBy;
 }
-  .sortBy__container {
-    border-radius: var(--border-radius);
-    background-color: var(--swatch-bg-light);
-    display: flex;
-    flex-wrap: wrap;
-    padding: 3px 8px;
-  }
 
-  .pivot__sortBy hr {
-    border-width: 0 thin 0 0;
-    border-style: solid;
-    border-color: var(--swatch-dark);
-    height: auto;
-    align-self: stretch;
-    flex-shrink: 0;
-    margin: 4px 6px;
-  }
+.sortBy__container {
+  border-radius: var(--border-radius);
+  background-color: var(--swatch-bg-light);
+  display: flex;
+  flex-wrap: wrap;
+  padding: 3px 8px;
+}
 
-  .sortBy__x,
-  .sortBy__y {
-    display: inline-flex;
-    gap: 6px;
-    align-items: center;
-  }
+.pivot__sortBy hr {
+  border-width: 0 thin 0 0;
+  border-style: solid;
+  border-color: var(--swatch-dark);
+  height: auto;
+  align-self: stretch;
+  flex-shrink: 0;
+  margin: 4px 6px;
+}
 
-  .sortBy__control-group {
-    display: inline-flex;
-    gap: 2px;
-  }
+.sortBy__x,
+.sortBy__y {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
 
-  .sortBy__toggle {
-    cursor: pointer;
-  }
+.sortBy__control-group {
+  display: inline-flex;
+  gap: 2px;
+}
 
-  .pivot__sortBy h4 {
-    font-size: 0.75em;
-    font-weight: 400;
-    margin: 0;
-  }
+.sortBy__toggle {
+  cursor: pointer;
+}
 
-  .pivot__sortBy label {
-    line-height: 1;
-  }
+.pivot__sortBy h4 {
+  font-size: 0.75em;
+  font-weight: 400;
+  margin: 0;
+}
 
-  .pivot__sortBy label:hover input[type="radio"]:not(:checked) + span {
-    background-color: var(--swatch-primary-darken);
-    color: inherit;
-  }
+.pivot__sortBy label {
+  line-height: 1;
+}
 
-  .pivot__sortBy label input[type="radio"] {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border-width: 0;
-  }
+.pivot__sortBy label:hover input[type="radio"]:not(:checked) + span {
+  background-color: var(--swatch-primary-darken);
+  color: inherit;
+}
 
-  .pivot__sortBy label input[type="radio"] + span {
-    border-radius: var(--border-radius);
-    border-right-width: 0;
-    color: rgba(0,0,0, 0.5);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    height: 30px;
-    padding: 0;
-  }
+.pivot__sortBy label input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
 
-  .pivot__sortBy label input[type="radio"]:checked + span {
-    background-color: var(--swatch-primary);
-    color: rgba(0, 0, 0, 1);
-  }
+.pivot__sortBy label input[type="radio"] + span {
+  border-radius: var(--border-radius);
+  border-right-width: 0;
+  color: rgba(0,0,0, 0.5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+}
+
+.pivot__sortBy label input[type="radio"]:checked + span {
+  background-color: var(--swatch-primary);
+  color: rgba(0, 0, 0, 1);
+}

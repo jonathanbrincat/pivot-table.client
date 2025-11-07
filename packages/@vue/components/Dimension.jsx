@@ -1,6 +1,6 @@
 import { defineComponent, ref, watch } from 'vue'
+
 import '../../@react/components/dimension.css'
-// import './dimension.css'
 
 const Dimension = defineComponent({
   props: {

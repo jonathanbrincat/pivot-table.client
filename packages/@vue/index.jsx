@@ -8,7 +8,6 @@ import PivotData from '../@core/js/PivotData'
 import { sortAs, getSort } from '../@core/js/utilities'
 import { sortBy } from '../@core/js/constants'
 
-// import './index.css'
 import '../@react/index.css'
 
 export default defineComponent({
