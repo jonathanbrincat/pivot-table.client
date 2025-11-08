@@ -3,91 +3,46 @@ import PropTypes from 'prop-types'
 import { ReactSortable } from 'react-sortablejs'
 import Dimension from './components/Dimension'
 import PivotTable from './components/PivotTable'
-import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer, createPlotlyRenderer, createChartjsRenderer } from './components/renderers'
 import PivotData from '../@core/js/PivotData'
 import { sortAs, getSort } from '../@core/js/utilities'
 import { sortBy } from '../@core/js/constants'
-import { colors as palette  } from '../../common/js/constants'
 
 import './index.css'
 
-// JB: defaultProps to be deprecated in React
-PivotTableUI.defaultProps = Object.assign(
-  {},
-  PivotTable.defaultProps,
-  {
-    hiddenAttributes: [],
-    hiddenFromAggregators: [],
-    hiddenFromDragDrop: [],
-    menuLimit: 500,
-    rows: [],
-    cols: [],
-  }
-)
+const defaults = {
+  hiddenAttributes: [],
+  hiddenFromAggregators: [],
+  hiddenFromDragDrop: [],
+  menuLimit: 500,
+  rows: [],
+  cols: [],
+}
 
-// console.log('JB :1: ', PivotTable.defaultProps)
-// console.log('JB :2: ', PivotTableUI.defaultProps)
-
-// const test = {
-//   // ...PivotTable.defaultProps,
-//   rendererName:'Table',
-//   renderers: {
-//     ...TableRenderer,
-//     ...FoobarRenderer,
-//     ...TestRenderer,
-//     ...TSVRenderer,
-//     // ...createPlotlyRenderer(PlotlyComponent),
-//     ...createChartjsRenderer({ palette }),
-//   },
-
-//   hiddenAttributes: [],
-//   hiddenFromAggregators: [],
-//   hiddenFromDragDrop: [],
-//   menuLimit: 500,
-//   rows: [],
-//   cols: [],
-// }
-
-// console.log('JB :test: ', test)
-
-/* eslint-disable react/prop-types */
-// eslint can't see inherited propTypes!
-
-// export default function PivotTableUI({
-//   // ...PivotTable.defaultProps,
-//   rendererName = 'Table',
-//   renderers = {
-//     ...TableRenderer,
-//     ...FoobarRenderer,
-//     ...TestRenderer,
-//     ...TSVRenderer,
-//     // ...createPlotlyRenderer(PlotlyComponent),
-//     ...createChartjsRenderer({ palette }),
-//   },
-
-//   hiddenAttributes = [],
-//   hiddenFromAggregators = [],
-//   hiddenFromDragDrop = [],
-//   menuLimit = 500,
-//   rows = [],
-//   cols = [],
-//   ...props
-// }) {
 export default function PivotTableUI(props) {
-  // props = {
-  //   ...PivotTable.defaultProps,  // Merge PivotTable's defaultProps
-  //   ...props,                    // Overwrite with any incoming props
-  // }
+
+  // Overrides
+  props = {
+    ...PivotTable.defaultProps,
+    ...defaults,
+    ...props,
+  }
+
+  // Merge
+  props.renderers = Object.assign({}, PivotTable.defaultProps.renderers, props.renderers)
+  props.aggregators = Object.assign({}, PivotTable.defaultProps.aggregators, props.aggregators)
+  
   // console.log('JB :props: ', props)
+  // console.log('JB :renderers: ', props.renderers)
+  // console.log('JB :aggregators: ', props.aggregators)
 
   const [dimensions, setDimensions] = useState({})
-
-  const [axisX, setAxisX] = useState(props.cols ?? [])
-  const [axisY, setAxisY] = useState(props.rows ?? [])
+  
+  const [axisX, setAxisX] = useState(props.cols)
+  const [axisY, setAxisY] = useState(props.rows)
   const [criterion, setCriterion] = useState([])
-
-  const [filters, setFilters] = useState(props.valueFilter ?? {})
-
+  
+  const [filters, setFilters] = useState(props.valueFilter)
+  
   const [activeRenderer, setActiveRenderer] = useState(
     props.rendererName in props.renderers
       ? props.rendererName
@@ -98,7 +53,7 @@ export default function PivotTableUI(props) {
       ? props.aggregatorName
       : Object.keys(props.aggregators)[0]
   )
-  const [activeDimensions, setActiveDimensions] = useState([...props.vals])
+  const [activeDimensions, setActiveDimensions] = useState(props.vals)
   const [sortByRow, setSortByRow] = useState(sortBy.row[0].value)
   const [sortByColumn, setSortByColumn] = useState(sortBy.column[0].value)
 
@@ -250,10 +205,9 @@ export default function PivotTableUI(props) {
     setFilters({ ...filters, ...collection })
   }
 
-  function createCluster(items, onSortableChangeHandler) {
-    // console.log(items, ' :: ',items)
-    
-    const temp = (
+  function createCluster(items, onSortableChangeHandler) {    
+    // BUG: The select all checkbox is not isolated and will toggle all dimensions; this bug exists in the original library.
+    return (
       // BUG: if no presets are supplied then UI isn't initialise with reactsortable; empty array won't have object to check for prop
       // Object.prototype.hasOwnProperty.call(items[0], 'name') &&
       <ReactSortable
@@ -289,9 +243,6 @@ export default function PivotTableUI(props) {
         }
       </ReactSortable>
     )
-    // console.log(' :: ',temp)
-
-    return temp
   }
   
   return (

@@ -195,7 +195,7 @@ function makeRenderer(
               {
                 rowKeys.map(function(rowKey, i) {
                   const totalAggregator = pivotData.getAggregator(rowKey, [])
-                  // console.log('fuck :rowKey: ', totalAggregator)
+
                   return (
                     <tr key={`rowKeyRow${i}`}>
                       {

@@ -5,12 +5,7 @@ import PivotData from '../../../@core/js/PivotData'
 /* eslint-disable react/prop-types */
 // eslint can't see inherited propTypes!
 
-import { Chart as ChartJS, Tooltip, Legend, CategoryScale, LinearScale, BarElement, BarController } from 'chart.js'
-import { Bar } from 'react-chartjs-2'
-
-ChartJS.register(Tooltip, Legend, CategoryScale, LinearScale, BarElement, BarController)
-
-const data = {
+const chartjsData = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
   datasets: [
     {
@@ -26,7 +21,7 @@ const data = {
   ],
 };
 
-const OPTIONS = {
+const chartjsOptions = {
   responsive: true,
   indexAxis: 'y',
   plugins: {
@@ -45,7 +40,21 @@ const OPTIONS = {
   },
 }
 
+const OPTIONS = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Chart.js Bar Chart',
+    },
+  },
+}
+
 function makeRenderer(
+  ChartjsComponent,
   config = {},
   transpose = false,
 ) {
@@ -96,17 +105,18 @@ function makeRenderer(
         return trace
       })
 
-      // const data = {
-      //   labels: dataset[0].labels,
-      //   datasets: [...dataset],
-      // }
+      const data = {
+        labels: dataset[0].labels,
+        datasets: [...dataset],
+      }
 
-      console.log('JB :: ', data)
+      // console.log('JB :: ', data)
       
       return (
         <>
-          {/* JB :: throws error => Warning: Invalid hook call. */}
-          <Bar data={data} options={OPTIONS} />
+          <p>Chart.js</p>
+          <ChartjsComponent data={data} options={OPTIONS} />
+          {/* <ChartjsComponent data={chartjsData} options={chartjsOptions} /> */}
         </>
       )
     }
@@ -119,8 +129,8 @@ function makeRenderer(
   return Renderer
 }
 
-export default function createChartjsRenderer(config) {
+export default function createChartjsRenderer(ChartjsComponent, config) {
   return {
-    'Chartjs': makeRenderer(config, true),
+    Chartjs: makeRenderer(ChartjsComponent, config, true),
   }
 }

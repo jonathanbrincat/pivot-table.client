@@ -1,16 +1,20 @@
-<script setup lang="js">
-import { computed } from 'vue'
-import PivotData from '../../@core/js/PivotData'
-import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer, createPlotlyRenderer, createChartjsRenderer } from './renderers'
+<script lang="js">
+import { TableRenderer, FoobarRenderer, TestRenderer } from './renderers'
 import { aggregators } from '../../@core/js/aggregators'
 
+export const defaultRenderers = { ...TableRenderer, ...FoobarRenderer, ...TestRenderer }
+export const defaultAggregators = aggregators
+</script>
+
+<script setup lang="js">
+import { computed } from 'vue'
+
 const props = defineProps(
-  
   {
     // PivotData.defaultProps,
     aggregators: {
       type: Object,
-      default: () => aggregators,
+      default: () => defaultAggregators,
     },
     cols: {
       type: Array,
@@ -58,7 +62,7 @@ const props = defineProps(
     },
     renderers: {
       type: Object,
-      default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer, ...TSVRenderer, }),
+      default: () => defaultRenderers,
     },
   }
 )

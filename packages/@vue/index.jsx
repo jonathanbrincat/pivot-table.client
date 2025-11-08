@@ -1,12 +1,12 @@
 import { defineComponent, ref, computed, watch, watchEffect } from 'vue'
 import Draggable from 'vuedraggable'
 import Dimension from './components/Dimension'
-import PivotTable from './components/PivotTable.vue'
-import { TableRenderer, TSVRenderer, FoobarRenderer, TestRenderer, createPlotlyRenderer, createChartjsRenderer } from './components/renderers'
+import PivotTable, { defaultRenderers, defaultAggregators } from './components/PivotTable.vue'
 import PivotData from '../@core/js/PivotData'
-import { aggregators } from '../@core/js/aggregators'
+// import { aggregators as defaultAggregators } from '../@core/js/aggregators'
 import { sortAs, getSort } from '../@core/js/utilities'
 import { sortBy } from '../@core/js/constants'
+import { colors as palette  } from '../../common/js/constants'
 
 import '../@react/index.css'
 
@@ -20,8 +20,7 @@ export default defineComponent({
       // PivotData.defaultProps @core/js/PivotData.js
       aggregators: {
         type: Object,
-        default: () => aggregators,
-        //  default: () => ({}),
+        default: () => defaultAggregators,
       },
       cols: {
         type: Array,
@@ -67,8 +66,7 @@ export default defineComponent({
       },
       renderers: {
         type: Object,
-        default: () => ({ ...TableRenderer, ...FoobarRenderer, ...TestRenderer, ...TSVRenderer, }),
-        // default: () => ({}),
+        default: () => defaultRenderers,
       },
 
       hiddenAttributes: {
@@ -99,6 +97,31 @@ export default defineComponent({
   ),
 
   setup(props) {
+
+    // JB: shouldn't be necessary  i dont think
+    // const defaults = {
+    //   hiddenAttributes: [],
+    //   hiddenFromAggregators: [],
+    //   hiddenFromDragDrop: [],
+    //   menuLimit: 500,
+    //   rows: [],
+    //   cols: [],
+    // }
+
+    // Overrides
+    // props = {
+    //   ...defaults,
+    //   ...props,
+    // }
+
+    // Merged
+    const merged = computed(() => {
+      return {
+        renderers: { ...defaultRenderers, ...props.renderers },
+        aggregators: { ...defaultAggregators, ...props.aggregators },
+      }
+    })
+
     const dimensions = ref({})
 
     const axisX = ref(props.cols ?? [])
@@ -108,17 +131,17 @@ export default defineComponent({
     const filters = ref(props.valueFilter ?? {})
 
     const activeRenderer = ref(
-      props.rendererName in props.renderers
-        ? props.rendererName
+      props.rendererName in merged.value.renderers
+        ? merged.value.rendererName
         : Object.keys(props.renderers)[0]
     )
     const activeAggregator = ref(
-      props.aggregatorName in props.aggregators
+      props.aggregatorName in merged.value.aggregators
           ? props.aggregatorName
-          : Object.keys(props.aggregators)[0]
+          : Object.keys(merged.value.aggregators)[0]
     )
 
-    const activeDimensions = ref([...props.vals])
+    const activeDimensions = ref(props.vals)
     const sortByRow = ref(sortBy.row[0].value)
     const sortByColumn = ref(sortBy.column[0].value)
 
@@ -224,13 +247,9 @@ export default defineComponent({
       return results
     }
 
-    // console.log('JB :props.aggregators: ', props.aggregators)
-    // console.log('JB :activeAggregator: ', activeAggregator.value)
-    // const numValsAllowed = computed(() => props.aggregators[activeAggregator.value]([])().numInputs || 0)
-    const numValsAllowed = computed(() => 0)
+    const numValsAllowed = computed(() => merged.value.aggregators[activeAggregator.value]([])().numInputs || 0)
 
-    // const aggregatorCellOutlet = computed(() => props.aggregators[activeAggregator.value]([])().outlet)
-    const aggregatorCellOutlet = computed(() => (() => {}))
+    const aggregatorCellOutlet = computed(() => merged.value.aggregators[activeAggregator.value]([])().outlet)
 
     function setAllValuesInFilter(attribute, values) {
       const { [attribute]: _discard_, ...rest } = filters.value // JB: pretty suure destructuring reactive refs is a no no in vue
@@ -330,7 +349,7 @@ export default defineComponent({
               }
             >
               {
-                Object.keys(props.renderers).map(
+                Object.keys(merged.value.renderers).map(
                   (item, index) => (
                     <option value={item} key={`renderer-${index}`}>{item}</option>
                   )
@@ -348,7 +367,7 @@ export default defineComponent({
               }
             >
               {
-                Object.keys(props.aggregators).map(
+                Object.keys(merged.value.aggregators).map(
                   (item, index) => (
                     <option value={item} key={`aggregator-${index}`}>{item}</option>
                   )
@@ -571,8 +590,8 @@ export default defineComponent({
           <article class="pivot__output">
             <PivotTable
               data={props.data}
-              renderers={props.renderers}
-              aggregators={props.aggregators}
+              renderers={merged.value.renderers}
+              aggregators={merged.value.aggregators}
               rows={axisY.value.map(({ name }) => name)}
               cols={axisX.value.map(({ name }) => name)}
               rendererName={activeRenderer.value}

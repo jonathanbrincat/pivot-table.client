@@ -9,7 +9,7 @@ function makeRenderer(
   PlotlyComponent,
   traceOptions = {},
   layoutOptions = {},
-  transpose = false
+  transpose = false,
 ) {
   class Renderer extends React.PureComponent {
     render() {
@@ -19,12 +19,12 @@ function makeRenderer(
 
       const traceKeys = transpose ? colKeys : rowKeys
       if (traceKeys.length === 0) {
-        traceKeys.push([]);
+        traceKeys.push([])
       }
 
       const datumKeys = transpose ? rowKeys : colKeys
       if (datumKeys.length === 0) {
-        datumKeys.push([]);
+        datumKeys.push([])
       }
 
       let fullAggName = this.props.aggregatorName;
@@ -74,11 +74,11 @@ function makeRenderer(
         : this.props.rows.join('-')
       
       if (hAxisTitle !== '') {
-        titleText += ` vs ${hAxisTitle}`;
+        titleText += ` vs ${hAxisTitle}`
       }
 
       if (groupByTitle !== '') {
-        titleText += ` by ${groupByTitle}`;
+        titleText += ` by ${groupByTitle}`
       }
 
       const layout = {
@@ -91,8 +91,8 @@ function makeRenderer(
       }
 
       if (traceOptions.type === 'pie') {
-        const columns = Math.ceil(Math.sqrt(data.length));
-        const rows = Math.ceil(data.length / columns);
+        const columns = Math.ceil(Math.sqrt(data.length))
+        const rows = Math.ceil(data.length / columns)
         layout.grid = {columns, rows};
         data.forEach((d, i) => {
           d.domain = {
@@ -105,7 +105,7 @@ function makeRenderer(
         })
 
         if (data[0].labels.length === 1) {
-          layout.showlegend = false;
+          layout.showlegend = false
         }
       } else {
         layout.xaxis = {
@@ -115,11 +115,11 @@ function makeRenderer(
         layout.yaxis = {
           title: transpose ? null : fullAggName,
           automargin: true,
-        };
+        }
       }
 
       return (
-        <div>
+        <>
           <PlotlyComponent
             data={data}
             layout={Object.assign(
@@ -130,7 +130,7 @@ function makeRenderer(
             config={this.props.plotlyConfig}
             onUpdate={this.props.onRendererUpdate}
           />
-        </div>
+        </>
       )
     }
   }
@@ -210,7 +210,7 @@ function makeScatterRenderer(PlotlyComponent) {
   return Renderer;
 }
 
-export default function createPlotlyRenderer(PlotlyComponent) {
+export default function createPlotlyRenderer(PlotlyComponent, config) {
   return {
     'Grouped Column Chart': makeRenderer(
       PlotlyComponent,
